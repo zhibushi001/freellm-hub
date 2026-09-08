@@ -171,3 +171,347 @@ function rowToProvider(row: ProviderRow) {
     updatedAt: row.updated_at,
   };
 }
+
+// ===== Provider operations: refresh-models, test, bulk delete =====
+
+import { createProvider } from '../../providers/factory.js';
+
+// POST /api/providers/:id/refresh-models — fetch fresh model list from upstream
+providersRouter.post('/providers/:id/refresh-models', async (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT * FROM providers WHERE id = ?').get(req.params.id) as
+    | ProviderRow
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const apiKey = getProviderKey(req.params.id);
+  if (!apiKey) {
+    res.status(400).json({ error: { message: 'Provider has no API key' } });
+    return;
+  }
+  const provider = createProvider({
+    id: row.id,
+    label: row.label,
+    baseUrl: row.base_url,
+    apiPath: row.api_path,
+    modelsPath: row.models_path,
+    apiKey,
+  });
+  try {
+    const models = await provider.listModels();
+    const now = Date.now();
+    const tx = db.transaction(() => {
+      db.prepare('DELETE FROM provider_models WHERE provider_id = ?').run(row.id);
+      const ins = db.prepare(
+        'INSERT INTO provider_models (provider_id, model_id, fetched_at) VALUES (?, ?, ?)',
+      );
+      for (const m of models) ins.run(row.id, m.id, now);
+    });
+    tx();
+    res.json({
+      data: {
+        providerId: row.id,
+        count: models.length,
+        models: models.map((m) => m.id),
+      },
+    });
+  } catch (e) {
+    res.status(502).json({
+      error: {
+        message: `Failed to fetch models: ${(e as Error).message}`,
+        type: 'upstream_error',
+      },
+    });
+  }
+});
+
+// POST /api/providers/:id/test — send a tiny test request, return latency
+providersRouter.post('/providers/:id/test', async (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT * FROM providers WHERE id = ?').get(req.params.id) as
+    | ProviderRow
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const apiKey = getProviderKey(req.params.id);
+  if (!apiKey) {
+    res.status(400).json({ error: { message: 'Provider has no API key' } });
+    return;
+  }
+  const provider = createProvider({
+    id: row.id,
+    label: row.label,
+    baseUrl: row.base_url,
+    apiPath: row.api_path,
+    modelsPath: row.models_path,
+    apiKey,
+  });
+  // Pick first model from cache, or fall back to "test" model id
+  const cached = db
+    .prepare('SELECT model_id FROM provider_models WHERE provider_id = ? LIMIT 1')
+    .get(row.id) as { model_id: string } | undefined;
+  const modelId = (req.body?.model as string) || cached?.model_id || 'test';
+  const prompt = (req.body?.prompt as string) || 'ping';
+  const start = Date.now();
+  try {
+    const out = await provider.chat({
+      model: modelId,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 8,
+      stream: false,
+    } as any);
+    const latency = Date.now() - start;
+    res.json({
+      data: {
+        providerId: row.id,
+        model: modelId,
+        latencyMs: latency,
+        content: out.choices?.[0]?.message?.content ?? '',
+        usage: out.usage,
+      },
+    });
+  } catch (e) {
+    res.status(502).json({
+      error: {
+        message: `Test failed: ${(e as Error).message}`,
+        type: 'upstream_error',
+        latencyMs: Date.now() - start,
+      },
+    });
+  }
+});
+
+// GET /api/providers/:id/models — list cached models for a provider
+providersRouter.get('/providers/:id/models', (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT id, label FROM providers WHERE id = ?').get(req.params.id) as
+    | { id: string; label: string }
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const models = db
+    .prepare(
+      'SELECT model_id, fetched_at FROM provider_models WHERE provider_id = ? ORDER BY model_id',
+    )
+    .all(row.id) as { model_id: string; fetched_at: number }[];
+  res.json({
+    data: {
+      providerId: row.id,
+      label: row.label,
+      count: models.length,
+      models: models.map((m) => ({
+        id: m.model_id,
+        qualified: `${row.label}:${m.model_id}`,
+        fetchedAt: m.fetched_at,
+      })),
+    },
+  });
+});
+
+// DELETE /api/providers/:id/models — bulk delete models
+// body: { ids?: string[] } — if omitted, delete ALL cached models for this provider
+providersRouter.delete('/providers/:id/models', (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT id FROM providers WHERE id = ?').get(req.params.id) as
+    | { id: string }
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const ids = req.body?.ids as string[] | undefined;
+  let changes = 0;
+  if (Array.isArray(ids) && ids.length > 0) {
+    const del = db.prepare(
+      'DELETE FROM provider_models WHERE provider_id = ? AND model_id = ?',
+    );
+    const tx = db.transaction(() => {
+      for (const m of ids) changes += del.run(row.id, m).changes;
+    });
+    tx();
+  } else {
+    // No ids provided → delete all
+    const info = db
+      .prepare('DELETE FROM provider_models WHERE provider_id = ?')
+      .run(row.id);
+    changes = info.changes;
+  }
+  res.json({ data: { deleted: changes } });
+});
+
+// ===== Provider operations: refresh-models, test, bulk delete =====
+
+
+// POST /api/providers/:id/refresh-models — fetch fresh model list from upstream
+providersRouter.post('/providers/:id/refresh-models', async (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT * FROM providers WHERE id = ?').get(req.params.id) as
+    | ProviderRow
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const apiKey = getProviderKey(req.params.id);
+  if (!apiKey) {
+    res.status(400).json({ error: { message: 'Provider has no API key' } });
+    return;
+  }
+  const provider = createProvider({
+    id: row.id,
+    label: row.label,
+    baseUrl: row.base_url,
+    apiPath: row.api_path,
+    modelsPath: row.models_path,
+    apiKey,
+  });
+  try {
+    const models = await provider.listModels();
+    const now = Date.now();
+    const tx = db.transaction(() => {
+      db.prepare('DELETE FROM provider_models WHERE provider_id = ?').run(row.id);
+      const ins = db.prepare(
+        'INSERT INTO provider_models (provider_id, model_id, fetched_at) VALUES (?, ?, ?)',
+      );
+      for (const m of models) ins.run(row.id, m.id, now);
+    });
+    tx();
+    res.json({
+      data: {
+        providerId: row.id,
+        count: models.length,
+        models: models.map((m) => m.id),
+      },
+    });
+  } catch (e) {
+    res.status(502).json({
+      error: {
+        message: `Failed to fetch models: ${(e as Error).message}`,
+        type: 'upstream_error',
+      },
+    });
+  }
+});
+
+// POST /api/providers/:id/test — send a tiny test request, return latency
+providersRouter.post('/providers/:id/test', async (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT * FROM providers WHERE id = ?').get(req.params.id) as
+    | ProviderRow
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const apiKey = getProviderKey(req.params.id);
+  if (!apiKey) {
+    res.status(400).json({ error: { message: 'Provider has no API key' } });
+    return;
+  }
+  const provider = createProvider({
+    id: row.id,
+    label: row.label,
+    baseUrl: row.base_url,
+    apiPath: row.api_path,
+    modelsPath: row.models_path,
+    apiKey,
+  });
+  // Pick first model from cache, or fall back to "test" model id
+  const cached = db
+    .prepare('SELECT model_id FROM provider_models WHERE provider_id = ? LIMIT 1')
+    .get(row.id) as { model_id: string } | undefined;
+  const modelId = (req.body?.model as string) || cached?.model_id || 'test';
+  const prompt = (req.body?.prompt as string) || 'ping';
+  const start = Date.now();
+  try {
+    const out = await provider.chat({
+      model: modelId,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 8,
+      stream: false,
+    } as any);
+    const latency = Date.now() - start;
+    res.json({
+      data: {
+        providerId: row.id,
+        model: modelId,
+        latencyMs: latency,
+        content: out.choices?.[0]?.message?.content ?? '',
+        usage: out.usage,
+      },
+    });
+  } catch (e) {
+    res.status(502).json({
+      error: {
+        message: `Test failed: ${(e as Error).message}`,
+        type: 'upstream_error',
+        latencyMs: Date.now() - start,
+      },
+    });
+  }
+});
+
+// GET /api/providers/:id/models — list cached models for a provider
+providersRouter.get('/providers/:id/models', (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT id, label FROM providers WHERE id = ?').get(req.params.id) as
+    | { id: string; label: string }
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const models = db
+    .prepare(
+      'SELECT model_id, fetched_at FROM provider_models WHERE provider_id = ? ORDER BY model_id',
+    )
+    .all(row.id) as { model_id: string; fetched_at: number }[];
+  res.json({
+    data: {
+      providerId: row.id,
+      label: row.label,
+      count: models.length,
+      models: models.map((m) => ({
+        id: m.model_id,
+        qualified: `${row.label}:${m.model_id}`,
+        fetchedAt: m.fetched_at,
+      })),
+    },
+  });
+});
+
+// DELETE /api/providers/:id/models — bulk delete models
+// body: { ids?: string[] } — if omitted, delete ALL cached models for this provider
+providersRouter.delete('/providers/:id/models', (req, res) => {
+  const db = getDb();
+  const row = db.prepare('SELECT id FROM providers WHERE id = ?').get(req.params.id) as
+    | { id: string }
+    | undefined;
+  if (!row) {
+    res.status(404).json({ error: { message: 'Provider not found' } });
+    return;
+  }
+  const ids = req.body?.ids as string[] | undefined;
+  let changes = 0;
+  if (Array.isArray(ids) && ids.length > 0) {
+    const del = db.prepare(
+      'DELETE FROM provider_models WHERE provider_id = ? AND model_id = ?',
+    );
+    const tx = db.transaction(() => {
+      for (const m of ids) changes += del.run(row.id, m).changes;
+    });
+    tx();
+  } else {
+    const info = db
+      .prepare('DELETE FROM provider_models WHERE provider_id = ?')
+      .run(row.id);
+    changes = info.changes;
+  }
+  res.json({ data: { deleted: changes } });
+});
