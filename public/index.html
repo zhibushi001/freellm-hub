@@ -111,6 +111,22 @@
     .output.ok { border-left: 3px solid var(--success); }
     .output.err { border-left: 3px solid var(--error); }
     .provider-list, .key-list { display: grid; gap: 8px; }
+    .preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; max-height: 380px; overflow-y: auto; padding: 4px; }
+    .preset-card {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; font-size: 12px;
+      display: flex; flex-direction: column; gap: 4px; cursor: default;
+      transition: border-color 0.15s;
+    }
+    .preset-card:hover { border-color: var(--accent); }
+    .preset-card .preset-name { font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    .preset-card .preset-url { color: var(--text-dim); font-family: ui-monospace, monospace; font-size: 11px; word-break: break-all; }
+    .preset-card .preset-actions { margin-top: 4px; display: flex; gap: 6px; }
+    .preset-card .preset-actions button { font-size: 11px; padding: 3px 8px; }
+    .tag { font-size: 9px; padding: 1px 5px; border-radius: 6px; font-weight: 600; }
+    .tag-keyless { background: var(--warning); color: #0d1117; }
+    .tag-cn { background: rgba(248, 81, 73, 0.2); color: #ff7b72; }
+    .tag-special { background: rgba(163, 113, 247, 0.2); color: #c4a3ff; }
     .provider-item, .key-item {
       background: var(--bg-elev); border: 1px solid var(--border);
       border-radius: 8px; padding: 12px;
@@ -281,6 +297,11 @@
     </div>
 
     <div class="tab-panel" id="tab-providers">
+      <section>
+        <h2>从预设选择 <span class="pill" id="preset-count">载入中...</span></h2>
+        <p class="desc" style="margin-bottom: 12px;">点“使用”自动填表，再填 API key 即可。数据来自 <a href="https://github.com/tashfeenahmed/freellmapi" target="_blank" style="color: var(--accent);">freellmapi</a> 的 provider 注册表。</p>
+        <div class="preset-grid" id="preset-grid"><div class="desc">加载中...</div></div>
+      </section>
       <section>
         <h2>添加 Provider</h2>
         <div class="endpoint">
