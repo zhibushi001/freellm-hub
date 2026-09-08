@@ -5,371 +5,435 @@
       "name": "Groq",
       "baseUrl": "https://api.groq.com/openai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://console.groq.com/keys"
     },
     {
       "platform": "cerebras",
       "name": "Cerebras",
       "baseUrl": "https://api.cerebras.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://cloud.cerebras.ai"
     },
     {
       "platform": "bai",
       "name": "B.AI",
       "baseUrl": "https://api.b.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://b.ai"
     },
     {
       "platform": "anyapi",
       "name": "AnyAPI",
       "baseUrl": "https://api.anyapi.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://anyapi.ai"
     },
     {
       "platform": "radeon",
       "name": "AMD Radeon Cloud",
       "baseUrl": "https://developer.amd.com.cn/radeon/api/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://developer.amd.com.cn/radeon/tokenfactory"
     },
     {
       "platform": "nvidia",
       "name": "NVIDIA NIM",
       "baseUrl": "https://integrate.api.nvidia.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://build.nvidia.com/settings/api-keys"
     },
     {
       "platform": "mistral",
       "name": "Mistral",
       "baseUrl": "https://api.mistral.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://console.mistral.ai/api-keys/"
     },
     {
       "platform": "openrouter",
       "name": "OpenRouter",
       "baseUrl": "https://openrouter.ai/api/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://openrouter.ai/keys"
     },
     {
       "platform": "github",
       "name": "GitHub Models",
       "baseUrl": "https://models.github.ai/inference",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://github.com/settings/tokens"
     },
     {
       "platform": "huggingface",
       "name": "HuggingFace Router",
       "baseUrl": "https://router.huggingface.co/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://huggingface.co/settings/tokens"
     },
     {
       "platform": "ollama",
       "name": "Ollama Cloud",
       "baseUrl": "https://ollama.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://ollama.com/settings/keys"
     },
     {
       "platform": "kilo",
       "name": "Kilo Gateway",
       "baseUrl": "https://api.kilo.ai/api/gateway/v1",
       "keyless": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://app.kilo.ai",
+      "applyNote": "无需 key，匿名可用"
     },
     {
       "platform": "llm7",
       "name": "LLM7",
       "baseUrl": "https://api.llm7.io/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://llm7.io"
     },
     {
       "platform": "opencode",
       "name": "OpenCode Zen",
       "baseUrl": "https://opencode.ai/zen/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://opencode.ai/auth"
     },
     {
       "platform": "ovh",
       "name": "OVH AI Endpoints",
       "baseUrl": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
       "keyless": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://endpoints.ai.cloud.ovh.net",
+      "applyNote": "无需 key，匿名可用"
     },
     {
       "platform": "agnes",
       "name": "Agnes AI",
       "baseUrl": "https://apihub.agnes-ai.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://platform.agnes-ai.com"
     },
     {
       "platform": "reka",
       "name": "Reka",
       "baseUrl": "https://api.reka.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://platform.reka.ai"
     },
     {
       "platform": "siliconflow",
       "name": "SiliconFlow",
       "baseUrl": "https://api.siliconflow.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://siliconflow.com"
     },
     {
       "platform": "routeway",
       "name": "Routeway",
       "baseUrl": "https://api.routeway.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://routeway.ai"
     },
     {
       "platform": "bazaarlink",
       "name": "BazaarLink",
       "baseUrl": "https://bazaarlink.ai/api/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://bazaarlink.ai"
     },
     {
       "platform": "ainative",
       "name": "AINative Studio",
       "baseUrl": "https://api.ainative.studio/api/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://ainative.studio"
     },
     {
       "platform": "aion",
       "name": "Aion Labs",
       "baseUrl": "https://api.aionlabs.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://www.aionlabs.ai"
     },
     {
       "platform": "requesty",
       "name": "Requesty",
       "baseUrl": "https://router.requesty.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://www.requesty.ai"
     },
     {
       "platform": "navy",
       "name": "NavyAI",
       "baseUrl": "https://api.navy/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://api.navy"
     },
     {
       "platform": "nara",
       "name": "NaraRouter",
       "baseUrl": "https://router.bynara.id/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://router.bynara.id"
     },
     {
       "platform": "sealion",
       "name": "SEA-LION",
       "baseUrl": "https://api.sea-lion.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://sea-lion.ai"
     },
     {
       "platform": "orcarouter",
       "name": "OrcaRouter",
       "baseUrl": "https://api.orcarouter.ai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://www.orcarouter.ai"
     },
     {
       "platform": "unorouter",
       "name": "UnoRouter",
       "baseUrl": "https://api.unorouter.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://unorouter.com"
     },
     {
       "platform": "xkiro",
       "name": "xKiro",
       "baseUrl": "https://api.xkiro.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://xkiro.com"
     },
     {
       "platform": "qianfan",
       "name": "Baidu Qianfan",
       "baseUrl": "https://qianfan.baidubce.com/v2",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://console.bce.baidu.com/qianfan/overview",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "volcengine",
       "name": "Volcengine Ark",
       "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://console.volcengine.com/ark",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "longcat",
       "name": "LongCat",
       "baseUrl": "https://api.longcat.chat/openai/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://longcat.chat/platform",
+      "applyNote": "海外邮箱可注册"
     },
     {
       "platform": "xfyun",
       "name": "iFlytek Spark",
       "baseUrl": "https://spark-api-open.xf-yun.com/v1",
       "keyless": false,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://console.xfyun.cn",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "zhipu",
       "name": "Zhipu 智谱 (国内)",
       "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://z.ai/manage-apikey/apikey-list",
+      "applyNote": "国内手机号可注册"
     },
     {
       "platform": "zhipu-global",
       "name": "Zhipu Global (z.ai)",
       "baseUrl": "https://api.z.ai/api/paas/v4",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "applyNote": "海外手机号可注册",
+      "signupUrl": "https://z.ai/manage-apikey/apikey-list"
     },
     {
       "platform": "google",
       "name": "Google Gemini",
       "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://aistudio.google.com/apikey"
     },
     {
       "platform": "cohere",
       "name": "Cohere",
       "baseUrl": "https://api.cohere.ai/compatibility/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://dashboard.cohere.com/api-keys"
     },
     {
       "platform": "modelscope",
       "name": "ModelScope 魔搭",
       "baseUrl": "https://api-inference.modelscope.cn/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://modelscope.cn/my/myaccesstoken",
+      "applyNote": "需要绑定阿里云账号"
     },
     {
       "platform": "pollinations",
       "name": "Pollinations",
       "baseUrl": "https://gen.pollinations.ai/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://enter.pollinations.ai"
     },
     {
       "platform": "sail",
       "name": "Sail Research",
       "baseUrl": "https://api.sailresearch.com/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://app.sailresearch.com"
     },
     {
       "platform": "electronhub",
       "name": "Electron Hub",
       "baseUrl": "https://api.electronhub.ai/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://app.electronhub.ai"
     },
     {
       "platform": "experiential",
       "name": "Experiential Labs",
       "baseUrl": "https://api.experientiallabs.ai/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://platform.experientiallabs.ai"
     },
     {
       "platform": "aihorde",
       "name": "AI Horde (community)",
       "baseUrl": "https://oai.aihorde.net/v1",
       "special": true,
-      "tier": "free"
+      "tier": "free",
+      "signupUrl": "https://aihorde.net/register",
+      "applyNote": "无需 key，注册即可（慢）"
     },
     {
       "platform": "openai",
       "name": "OpenAI (GPT-4o/GPT-5)",
       "baseUrl": "https://api.openai.com/v1",
       "tier": "paid",
-      "notes": "OpenAI 官方。需绑卡。model 例: gpt-4o, gpt-4o-mini, o1, o3-mini"
+      "notes": "OpenAI 官方。需绑卡。model 例: gpt-4o, gpt-4o-mini, o1, o3-mini",
+      "signupUrl": "https://platform.openai.com/api-keys"
     },
     {
       "platform": "xai",
       "name": "xAI (Grok)",
       "baseUrl": "https://api.x.ai/v1",
       "tier": "paid",
-      "notes": "Grok-2/Grok-3。X 平台账号申请。model 例: grok-2-latest, grok-3"
+      "notes": "Grok-2/Grok-3。X 平台账号申请。model 例: grok-2-latest, grok-3",
+      "signupUrl": "https://console.x.ai"
     },
     {
       "platform": "deepseek",
       "name": "DeepSeek",
       "baseUrl": "https://api.deepseek.com/v1",
       "tier": "freemium",
-      "notes": "有免费赠送额度。model 例: deepseek-chat, deepseek-reasoner"
+      "notes": "有免费赠送额度。model 例: deepseek-chat, deepseek-reasoner",
+      "signupUrl": "https://platform.deepseek.com/api_keys"
     },
     {
       "platform": "perplexity",
       "name": "Perplexity",
       "baseUrl": "https://api.perplexity.ai",
       "tier": "paid",
-      "notes": "联网搜索。model 例: llama-3.1-sonar-small-128k-online"
+      "notes": "联网搜索。model 例: llama-3.1-sonar-small-128k-online",
+      "signupUrl": "https://www.perplexity.ai/settings/api"
     },
     {
       "platform": "together",
       "name": "Together AI",
       "baseUrl": "https://api.together.xyz/v1",
       "tier": "paid",
-      "notes": "开源模型托管。$5 免费额度起步。model 例: meta-llama/Llama-3-70b"
+      "notes": "开源模型托管。$5 免费额度起步。model 例: meta-llama/Llama-3-70b",
+      "signupUrl": "https://api.together.xyz/settings/api-keys"
     },
     {
       "platform": "fireworks",
       "name": "Fireworks AI",
       "tier": "paid",
       "baseUrl": "https://api.fireworks.ai/inference/v1",
-      "notes": "快推理。model 例: accounts/fireworks/models/llama-v3p1-70b"
+      "notes": "快推理。model 例: accounts/fireworks/models/llama-v3p1-70b",
+      "signupUrl": "https://fireworks.ai/account/api-keys"
     },
     {
       "platform": "moonshot",
       "name": "Moonshot Kimi",
       "tier": "freemium",
       "baseUrl": "https://api.moonshot.cn/v1",
-      "notes": "国内。128k+ 上下文。model 例: moonshot-v1-8k, moonshot-v1-128k"
+      "notes": "国内。128k+ 上下文。model 例: moonshot-v1-8k, moonshot-v1-128k",
+      "signupUrl": "https://platform.moonshot.cn/console/api-keys",
+      "applyNote": "国内手机号"
     },
     {
       "platform": "moonshot-intl",
       "name": "Moonshot Kimi (国际)",
       "tier": "freemium",
       "baseUrl": "https://api.moonshot.ai/v1",
-      "notes": "海外版 Kimi"
+      "notes": "海外版 Kimi",
+      "signupUrl": "https://platform.moonshot.ai/console/api-keys"
     },
     {
       "platform": "replicate",
       "name": "Replicate",
       "tier": "paid",
       "baseUrl": "https://openai-proxy.replicate.com/v1",
-      "notes": "开源模型通过 Replicate 调用"
+      "notes": "开源模型通过 Replicate 调用",
+      "signupUrl": "https://replicate.com/account/api-tokens"
     },
     {
       "platform": "novita",
       "name": "Novita AI",
       "tier": "paid",
       "baseUrl": "https://api.novita.ai/v3/openai",
-      "notes": "便宜的开源模型托管"
+      "notes": "便宜的开源模型托管",
+      "signupUrl": "https://novita.ai/dashboard"
     },
     {
       "platform": "openrouter-paid",
@@ -377,49 +441,61 @@
       "tier": "freemium",
       "baseUrl": "https://openrouter.ai/api/v1",
       "notes": "free key 也能用，但付费 key 才能调全模型。已有 openrouter 预设",
-      "aliasOf": "openrouter"
+      "aliasOf": "openrouter",
+      "signupUrl": "https://openrouter.ai/keys",
+      "applyNote": null
     },
     {
       "platform": "qwen",
       "name": "通义千问 Qwen (DashScope)",
       "tier": "freemium",
       "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-      "notes": "阿里云。有免费 token 额度。model 例: qwen-turbo, qwen-plus, qwen-max"
+      "notes": "阿里云。有免费 token 额度。model 例: qwen-turbo, qwen-plus, qwen-max",
+      "signupUrl": "https://dashscope.console.aliyun.com/apiKey"
     },
     {
       "platform": "stepfun",
       "name": "阶跃星辰 Stepfun",
       "tier": "paid",
       "baseUrl": "https://api.stepfun.com/v1",
-      "notes": "国内。model 例: step-1-8k, step-1-200k, step-1v-8k"
+      "notes": "国内。model 例: step-1-8k, step-1-200k, step-1v-8k",
+      "signupUrl": "https://platform.stepfun.com/account",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "hunyuan",
       "name": "腾讯混元 Hunyuan",
       "tier": "paid",
       "baseUrl": "https://api.hunyuan.cloud.tencent.com/v1",
-      "notes": "腾讯云。需开通过混元服务。model 例: hunyuan-pro, hunyuan-standard"
+      "notes": "腾讯云。需开通过混元服务。model 例: hunyuan-pro, hunyuan-standard",
+      "signupUrl": "https://console.cloud.tencent.com/hunyuan",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "yi",
       "name": "零一万物 Yi",
       "tier": "paid",
       "baseUrl": "https://api.lingyiwanwu.com/v1",
-      "notes": "李开复团队。model 例: yi-large, yi-medium, yi-vision"
+      "notes": "李开复团队。model 例: yi-large, yi-medium, yi-vision",
+      "signupUrl": "https://platform.lingyiwanwu.com/apikeys"
     },
     {
       "platform": "minimax",
       "name": "MiniMax",
       "tier": "paid",
       "baseUrl": "https://api.MiniMax.chat/v1",
-      "notes": "MiniMax 海螺 AI。model 例: abab6.5s-chat, abab6.5-chat"
+      "notes": "MiniMax 海螺 AI。model 例: abab6.5s-chat, abab6.5-chat",
+      "signupUrl": "https://platform.MiniMax.io/user-center/basic-information/interface-key",
+      "applyNote": null
     },
     {
       "platform": "baichuan",
       "name": "百川 Baichuan",
       "tier": "paid",
       "baseUrl": "https://api.baichuan-ai.com/v1",
-      "notes": "国内。model 例: Baichuan4, Baichuan3-Turbo"
+      "notes": "国内。model 例: Baichuan4, Baichuan3-Turbo",
+      "signupUrl": "https://platform.baichuan-ai.com/console/apikey",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "doubao-pro",
@@ -427,7 +503,9 @@
       "tier": "paid",
       "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
       "notes": "已有 volcengine 预设。豆包主力模型在 endpoint id 区分",
-      "aliasOf": "volcengine"
+      "aliasOf": "volcengine",
+      "signupUrl": "https://console.volcengine.com/ark",
+      "applyNote": null
     },
     {
       "platform": "wenxin",
@@ -435,7 +513,9 @@
       "tier": "paid",
       "baseUrl": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat",
       "notes": "⚠️ 百度文心 API 仍非 OpenAI 兼容。当前 hub 暂不支持",
-      "special": "non-compat"
+      "special": "non-compat",
+      "signupUrl": "https://console.bce.baidu.com/qianfan/ais/console/apiKey",
+      "applyNote": "需要中国大陆实名认证"
     },
     {
       "platform": "spark-v3",
@@ -443,21 +523,27 @@
       "tier": "paid",
       "baseUrl": "https://spark-api-open.xf-yun.com/v1",
       "notes": "讯飞主推 V2/V3.5 用 v1.5 路径，需专用适配",
-      "special": "partial-compat"
+      "special": "partial-compat",
+      "signupUrl": "https://console.xfyun.cn/services/sf",
+      "applyNote": null
     },
     {
       "platform": "nlp-cloud",
       "name": "NLP Cloud",
       "tier": "paid",
       "baseUrl": "https://api.nlpcloud.io/v1/gpu",
-      "notes": "欧洲托管开源模型"
+      "notes": "欧洲托管开源模型",
+      "signupUrl": "https://nlpcloud.com/home/token",
+      "applyNote": null
     },
     {
       "platform": "lambda",
       "name": "Lambda Chat",
       "tier": "paid",
       "baseUrl": "https://api.lambdalabs.com/v1",
-      "notes": "GPU 厂商自营。model 例: hermes-3-llama-3.1-405b-fp8"
+      "notes": "GPU 厂商自营。model 例: hermes-3-llama-3.1-405b-fp8",
+      "signupUrl": "https://cloud.lambdalabs.com/api-keys",
+      "applyNote": null
     },
     {
       "platform": "azure-openai",
@@ -465,7 +551,9 @@
       "tier": "paid",
       "baseUrl": "https://YOUR_RESOURCE.openai.azure.com/openai/deployments",
       "notes": "⚠️ 需替换 YOUR_RESOURCE 和 deployment 名。不完全 OpenAI 兼容",
-      "special": "azure"
+      "special": "azure",
+      "signupUrl": "https://portal.azure.com/#create/Microsoft.CognitiveServicesOpenAIAccount",
+      "applyNote": null
     },
     {
       "platform": "anthropic",
@@ -473,7 +561,8 @@
       "tier": "paid",
       "baseUrl": "https://api.anthropic.com",
       "notes": "✅ hub 专用 AnthropicProvider 已支持。model 例: claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022。/v1/chat/completions 可用（流式+非流式）",
-      "apiPath": "/v1/messages"
+      "apiPath": "/v1/messages",
+      "signupUrl": "https://console.anthropic.com/settings/keys"
     }
   ],
   "source": "https://github.com/tashfeenahmed/freellmapi (free) + manual curation (paid)",
