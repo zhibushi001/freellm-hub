@@ -434,7 +434,7 @@
       "name": "百度文心一言 (非 OpenAI 兼容)",
       "tier": "paid",
       "baseUrl": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat",
-      "notes": "⚠️ 文心一言 API 不是 OpenAI 兼容格式，需要专用 provider 类。当前 hub 暂不支持。已有 qianfan (千帆) 兼容版预设",
+      "notes": "⚠️ 百度文心 API 仍非 OpenAI 兼容。当前 hub 暂不支持",
       "special": "non-compat"
     },
     {
@@ -472,8 +472,8 @@
       "name": "Anthropic Claude",
       "tier": "paid",
       "baseUrl": "https://api.anthropic.com",
-      "notes": "⚠️ Anthropic API 用自己的 messages 格式，不是 OpenAI 兼容。需要专用 provider 类。Anthropic 官方目前不提供 OpenAI 兼容层",
-      "special": "non-compat"
+      "notes": "✅ hub 专用 AnthropicProvider 已支持。model 例: claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022。/v1/chat/completions 可用（流式+非流式）",
+      "apiPath": "/v1/messages"
     }
   ],
   "source": "https://github.com/tashfeenahmed/freellmapi (free) + manual curation (paid)",
