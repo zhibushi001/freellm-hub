@@ -221,6 +221,31 @@
     .section-toggle.collapsed .chev { transform: rotate(-90deg); }
     .section-body { overflow: hidden; transition: max-height 0.3s; }
     .section-body.collapsed { max-height: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+    /* === Models 表格样式 === */
+    .models-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+      background: var(--bg-elev); border-radius: 8px; overflow: hidden;
+    }
+    .models-table thead { background: var(--bg-card); }
+    .models-table th {
+      text-align: left; padding: 10px 12px; font-weight: 600; font-size: 11px;
+      color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .models-table td {
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .models-table tr:hover td { background: rgba(88, 166, 255, 0.05); }
+    .models-table .model-id { font-family: ui-monospace, monospace; font-size: 12px; }
+    .models-table .model-id .qualified { color: var(--text-dim); font-size: 10px; }
+    .models-table .provider { font-weight: 500; }
+    .models-table .actions { display: flex; gap: 4px; }
+    .models-table .actions button { font-size: 11px; padding: 3px 8px; white-space: nowrap; }
+    .models-empty {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px; text-align: center; color: var(--text-dim);
+    }
     footer {
       margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border);
       color: var(--text-dim); font-size: 13px; text-align: center;
@@ -296,7 +321,7 @@
 
     <div class="tabs">
       <div class="tab active" data-tab="chat">聊天</div>
-      <div class="tab" data-tab="endpoints">端点</div>
+      <div class="tab" data-tab="models">模型</div>
       <div class="tab" data-tab="providers">Providers</div>
       <div class="tab" data-tab="keys">Hub Keys</div>
     </div>
@@ -330,50 +355,45 @@
       </section>
     </div>
 
-    <div class="tab-panel" id="tab-endpoints">
+    <div class="tab-panel" id="tab-models">
       <section>
-        <h2>OpenAI 兼容 <span class="pill">/v1 · 需要 Hub Key</span></h2>
-        <div class="endpoint">
-          <div class="endpoint-head"><span class="method get">GET</span><span class="path">/v1/models</span></div>
-          <div class="desc">聚合所有 enabled provider 的模型。每个 id 格式为 <code>label:model_id</code>。</div>
-          <div class="actions">
-            <button class="primary" onclick="callV1('/v1/models', 'GET')">调用</button>
-            <button onclick="copyCurl('GET', '/v1/models')">复制 curl</button>
+        <h2>模型列表 <span class="pill" id="models-count">加载中...</span>
+          <button class="primary" style="margin-left: auto; font-size: 12px;" onclick="refreshAllModels(this)">🔄 全部刷新</button>
+        </h2>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
+          <input id="models-search" placeholder="搜索模型 (name / label / qualified)" oninput="renderModels()" style="flex: 1; min-width: 200px;" />
+          <div class="preset-filters" id="models-tier-filters" style="margin: 0;">
+            <button class="active" data-tier="all">全部</button>
+            <button data-tier="free">🟢 免费</button>
+            <button data-tier="freemium">🟡 免费额度</button>
+            <button data-tier="paid">🔴 付费</button>
           </div>
-          <div class="curl" id="curl-GET-/v1/models"></div>
-          <div class="output" id="out-GET-/v1/models"></div>
         </div>
-        <div class="endpoint">
-          <div class="endpoint-head"><span class="method post">POST</span><span class="path">/v1/chat/completions</span></div>
-          <div class="desc">OpenAI 兼容的聊天补全（支持 <code>stream: true</code> SSE）。</div>
-          <div class="actions">
-            <button onclick="copyCurl('POST', '/v1/chat/completions', {model:'zhipu:glm-4-flash',messages:[{role:'user',content:'hi'}],stream:true})">复制示例 curl</button>
-            <button class="primary" onclick="document.querySelector('[data-tab=&quot;chat&quot;]').click()">→ 聊天 tab</button>
+        <div id="models-table"><div class="desc">加载中...</div></div>
+        <details style="margin-top: 24px;">
+          <summary style="cursor: pointer; color: var(--text-dim); font-size: 13px;">API 参考 / Endpoints</summary>
+          <div style="margin-top: 12px;">
+            <div class="endpoint">
+              <div class="endpoint-head"><span class="method get">GET</span><span class="path">/v1/models</span></div>
+              <div class="desc">OpenAI 兼容的模型列表。需 Hub Key。</div>
+              <div class="actions">
+                <button class="primary" onclick="callV1('/v1/models', 'GET')">调用</button>
+                <button onclick="copyCurl('GET', '/v1/models')">复制 curl</button>
+              </div>
+              <div class="curl" id="curl-GET-/v1/models"></div>
+              <div class="output" id="out-GET-/v1/models"></div>
+            </div>
+            <div class="endpoint">
+              <div class="endpoint-head"><span class="method post">POST</span><span class="path">/v1/chat/completions</span></div>
+              <div class="desc">OpenAI 兼容聊天（支持 stream）。需 Hub Key。</div>
+              <div class="actions">
+                <button onclick="copyCurl('POST', '/v1/chat/completions', {model:'zhipu:glm-4-flash',messages:[{role:'user',content:'hi'}],stream:true})">复制示例 curl</button>
+                <button class="primary" onclick="document.querySelector('[data-tab=&quot;chat&quot;]').click()">→ 聊天</button>
+              </div>
+              <div class="curl" id="curl-POST-/v1/chat/completions"></div>
+            </div>
           </div>
-          <div class="curl" id="curl-POST-/v1/chat/completions"></div>
-        </div>
-      </section>
-      <section>
-        <h2>管理 API <span class="pill">/api · 无需 Hub Key</span></h2>
-        <div class="endpoint">
-          <div class="endpoint-head"><span class="method get">GET</span><span class="path">/api/providers</span></div>
-          <div class="desc">列出所有 provider。</div>
-          <button class="primary" onclick="callApi('/api/providers', 'GET', null, null)">调用</button>
-        </div>
-        <div class="endpoint">
-          <div class="endpoint-head"><span class="method get">POST</span><span class="path">/api/hub-keys</span></div>
-          <div class="desc">创建新的 hub key（返回完整 key 一次）。</div>
-          <button class="primary" onclick="document.querySelector('[data-tab=&quot;keys&quot;]').click()">→ Hub Keys tab</button>
-        </div>
-        <div class="endpoint">
-          <div class="endpoint-head"><span class="method get">GET</span><span class="path">/health</span></div>
-          <div class="desc">健康检查（公开）。</div>
-          <div class="actions">
-            <button class="primary" onclick="callApi('/health', 'GET', null, 'health')">调用</button>
-          </div>
-          <div class="curl" id="curl-GET-/health"></div>
-          <div class="output" id="out-health"></div>
-        </div>
+        </details>
       </section>
     </div>
 
