@@ -1,0 +1,263 @@
+{
+  "providers": [
+    {
+      "platform": "groq",
+      "name": "Groq",
+      "baseUrl": "https://api.groq.com/openai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "cerebras",
+      "name": "Cerebras",
+      "baseUrl": "https://api.cerebras.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "bai",
+      "name": "B.AI",
+      "baseUrl": "https://api.b.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "anyapi",
+      "name": "AnyAPI",
+      "baseUrl": "https://api.anyapi.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "radeon",
+      "name": "AMD Radeon Cloud",
+      "baseUrl": "https://developer.amd.com.cn/radeon/api/v1",
+      "keyless": false
+    },
+    {
+      "platform": "nvidia",
+      "name": "NVIDIA NIM",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "mistral",
+      "name": "Mistral",
+      "baseUrl": "https://api.mistral.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "openrouter",
+      "name": "OpenRouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "keyless": false
+    },
+    {
+      "platform": "github",
+      "name": "GitHub Models",
+      "baseUrl": "https://models.github.ai/inference",
+      "keyless": false
+    },
+    {
+      "platform": "huggingface",
+      "name": "HuggingFace Router",
+      "baseUrl": "https://router.huggingface.co/v1",
+      "keyless": false
+    },
+    {
+      "platform": "ollama",
+      "name": "Ollama Cloud",
+      "baseUrl": "https://ollama.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "kilo",
+      "name": "Kilo Gateway",
+      "baseUrl": "https://api.kilo.ai/api/gateway/v1",
+      "keyless": true
+    },
+    {
+      "platform": "llm7",
+      "name": "LLM7",
+      "baseUrl": "https://api.llm7.io/v1",
+      "keyless": false
+    },
+    {
+      "platform": "opencode",
+      "name": "OpenCode Zen",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "keyless": false
+    },
+    {
+      "platform": "ovh",
+      "name": "OVH AI Endpoints",
+      "baseUrl": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "keyless": true
+    },
+    {
+      "platform": "agnes",
+      "name": "Agnes AI",
+      "baseUrl": "https://apihub.agnes-ai.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "reka",
+      "name": "Reka",
+      "baseUrl": "https://api.reka.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "siliconflow",
+      "name": "SiliconFlow",
+      "baseUrl": "https://api.siliconflow.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "routeway",
+      "name": "Routeway",
+      "baseUrl": "https://api.routeway.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "bazaarlink",
+      "name": "BazaarLink",
+      "baseUrl": "https://bazaarlink.ai/api/v1",
+      "keyless": false
+    },
+    {
+      "platform": "ainative",
+      "name": "AINative Studio",
+      "baseUrl": "https://api.ainative.studio/api/v1",
+      "keyless": false
+    },
+    {
+      "platform": "aion",
+      "name": "Aion Labs",
+      "baseUrl": "https://api.aionlabs.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "requesty",
+      "name": "Requesty",
+      "baseUrl": "https://router.requesty.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "navy",
+      "name": "NavyAI",
+      "baseUrl": "https://api.navy/v1",
+      "keyless": false
+    },
+    {
+      "platform": "nara",
+      "name": "NaraRouter",
+      "baseUrl": "https://router.bynara.id/v1",
+      "keyless": false
+    },
+    {
+      "platform": "sealion",
+      "name": "SEA-LION",
+      "baseUrl": "https://api.sea-lion.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "orcarouter",
+      "name": "OrcaRouter",
+      "baseUrl": "https://api.orcarouter.ai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "unorouter",
+      "name": "UnoRouter",
+      "baseUrl": "https://api.unorouter.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "xkiro",
+      "name": "xKiro",
+      "baseUrl": "https://api.xkiro.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "qianfan",
+      "name": "Baidu Qianfan",
+      "baseUrl": "https://qianfan.baidubce.com/v2",
+      "keyless": false
+    },
+    {
+      "platform": "volcengine",
+      "name": "Volcengine Ark",
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
+      "keyless": false
+    },
+    {
+      "platform": "longcat",
+      "name": "LongCat",
+      "baseUrl": "https://api.longcat.chat/openai/v1",
+      "keyless": false
+    },
+    {
+      "platform": "xfyun",
+      "name": "iFlytek Spark",
+      "baseUrl": "https://spark-api-open.xf-yun.com/v1",
+      "keyless": false
+    },
+    {
+      "platform": "zhipu",
+      "name": "Zhipu 智谱 (国内)",
+      "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
+      "special": true
+    },
+    {
+      "platform": "zhipu-global",
+      "name": "Zhipu Global (z.ai)",
+      "baseUrl": "https://api.z.ai/api/paas/v4",
+      "special": true
+    },
+    {
+      "platform": "google",
+      "name": "Google Gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "special": true
+    },
+    {
+      "platform": "cohere",
+      "name": "Cohere",
+      "baseUrl": "https://api.cohere.ai/compatibility/v1",
+      "special": true
+    },
+    {
+      "platform": "modelscope",
+      "name": "ModelScope 魔搭",
+      "baseUrl": "https://api-inference.modelscope.cn/v1",
+      "special": true
+    },
+    {
+      "platform": "pollinations",
+      "name": "Pollinations",
+      "baseUrl": "https://gen.pollinations.ai/v1",
+      "special": true
+    },
+    {
+      "platform": "sail",
+      "name": "Sail Research",
+      "baseUrl": "https://api.sailresearch.com/v1",
+      "special": true
+    },
+    {
+      "platform": "electronhub",
+      "name": "Electron Hub",
+      "baseUrl": "https://api.electronhub.ai/v1",
+      "special": true
+    },
+    {
+      "platform": "experiential",
+      "name": "Experiential Labs",
+      "baseUrl": "https://api.experientiallabs.ai/v1",
+      "special": true
+    },
+    {
+      "platform": "aihorde",
+      "name": "AI Horde (community)",
+      "baseUrl": "https://oai.aihorde.net/v1",
+      "special": true
+    }
+  ],
+  "source": "https://github.com/tashfeenahmed/freellmapi/tree/main/server/src/providers"
+}
