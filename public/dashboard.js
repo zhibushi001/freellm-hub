@@ -442,17 +442,29 @@ async function createHubKey() {
   if (!res.ok) { alert('Failed: ' + (data && data.error && data.error.message || 'unknown')); return; }
   // Auto-save to localStorage so user can copy it back later
   try { localStorage.setItem('hubKey_' + data.id, data.fullKey); } catch (e) {}
+  const baseUrl = (window.__hubBaseUrl || 'http://localhost:3030') + '/v1';
+  const envBlock = `# 给你的 agent / 客户端用 (OpenAI 兼容)
+export OPENAI_BASE_URL="${baseUrl}"
+export OPENAI_API_KEY="${data.fullKey}"
+# 或在 .env 里直接写：
+# OPENAI_BASE_URL=${baseUrl}
+# OPENAI_API_KEY=${data.fullKey}`;
   const display = document.getElementById('new-key-display');
   display.innerHTML = `
     <div class="new-key-banner">
-      <div style="margin-bottom: 6px; color: var(--success); font-weight: 600;">✓ 已保存到本机 (localStorage) — 刷新后仍可复制</div>
+      <div style="margin-bottom: 6px; color: var(--success); font-weight: 600;">✓ 已保存到本机 — 刷新后仍可复制</div>
       <div>Label: <strong>${esc(data.label)}</strong></div>
       <div style="margin-top: 4px;">Full key:</div>
       <code id="new-key-value">${esc(data.fullKey)}</code>
-      <div class="actions" style="margin-top: 8px;">
-        <button class="primary" onclick="copyToClipboard('${esc(data.fullKey)}', this)">📋 复制</button>
+      <div class="actions" style="margin-top: 8px; flex-wrap: wrap;">
+        <button class="primary" onclick="copyToClipboard('${esc(data.fullKey)}', this)">📋 复制 key</button>
         <button onclick="setKey('${esc(data.fullKey)}')">🔑 用这个</button>
+        <button onclick="copyToClipboard(${JSON.stringify(envBlock)}, this)">📋 复制客户端配置</button>
       </div>
+      <details style="margin-top: 10px;">
+        <summary style="cursor: pointer; color: var(--text-dim); font-size: 12px;">查看客户端配置 (agent env)</summary>
+        <pre style="margin-top: 6px; background: var(--code-bg); padding: 8px; border-radius: 6px; font-size: 11px; overflow-x: auto; color: var(--text-dim);">${esc(envBlock)}</pre>
+      </details>
     </div>`;
   loadHubKeys();
 }
@@ -469,6 +481,67 @@ function useKey(id, prefix) {
   // We don't have the full key anymore (only prefix shown in list), so prompt user to paste
   const k = prompt(`粘贴完整 key (${prefix}...):`);
   if (k) setKey(k);
+}
+
+// === Hub config: base URL, import/export ===
+async function loadHubConfig() {
+  try {
+    const r = await fetch('/api/config');
+    const d = await r.json();
+    if (d && d.data) {
+      window.__hubBaseUrl = d.data.baseUrl;
+      const el = document.getElementById('hub-base-url');
+      if (el) el.textContent = d.data.baseUrl;
+    }
+  } catch (e) {}
+}
+
+async function exportConfig(withSecrets) {
+  const url = '/api/export' + (withSecrets ? '?includeSecrets=true' : '');
+  const r = await fetch(url);
+  if (!r.ok) { alert('导出失败'); return; }
+  const data = await r.json();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'freellm-hub-' + (withSecrets ? 'secrets-' : '') + Date.now() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const out = document.getElementById('out-config');
+  if (out) {
+    out.className = 'output';
+    out.textContent = '✓ 已下载: ' + (data.providers?.length || 0) + ' providers, ' + (data.hubKeys?.length || 0) + ' hub keys' + (withSecrets ? ' (含加密 secrets)' : ' (无 secrets)');
+  }
+}
+
+async function importConfig() {
+  const raw = document.getElementById('import-json').value.trim();
+  if (!raw) { alert('请粘贴 JSON'); return; }
+  let body;
+  try { body = JSON.parse(raw); }
+  catch (e) { alert('JSON 解析失败: ' + e.message); return; }
+  const out = document.getElementById('out-config');
+  out.className = 'output';
+  out.textContent = '⏳ 导入中...';
+  const r = await fetch('/api/import', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const data = await r.json();
+  if (!r.ok) { out.className = 'output err'; out.textContent = '✗ ' + (data.error?.message || '失败'); return; }
+  const d = data.data;
+  out.className = 'output';
+  out.textContent = `✓ 完成\nproviders: ${d.providers.created} 新建, ${d.providers.updated} 更新, ${d.providers.skipped} 跳过\nhubKeys: ${d.hubKeys.created} 新建, ${d.hubKeys.skipped} 跳过${d.providers.errors.length ? '\n错误:\n  ' + d.providers.errors.join('\n  ') : ''}`;
+  document.getElementById('import-json').value = '';
+  // Refresh related tabs
+  loadProviders();
+  loadHubKeys();
+  loadModels();
+}
+
+function loadSample() {
+  document.getElementById('import-json').value = JSON.stringify([
+    { platform: 'zhipu', apiKey: 'sk-your-zhipu-key-here', baseUrl: 'https://open.bigmodel.cn/api/paas/v4' },
+    { platform: 'groq', apiKey: 'gsk-your-groq-key-here', baseUrl: 'https://api.groq.com/openai/v1' },
+    { platform: 'openai', apiKey: 'sk-your-openai-key', baseUrl: 'https://api.openai.com/v1' }
+  ], null, 2);
 }
 
 function copyStoredKey(id, prefix, btn) {
@@ -628,6 +701,7 @@ document.querySelectorAll('.tab').forEach(t => {
 updateKeyDisplay();
 renderCurlTemplates();
 refreshStatus();
+loadHubConfig();
 loadProviders();
 loadPresets();
 loadHubKeys();
