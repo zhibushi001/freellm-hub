@@ -170,6 +170,9 @@ function clearAddForm() {
   ['add-label','add-baseUrl','add-apiKey','add-notes'].forEach(id => document.getElementById(id).value = '');
 }
 
+let presetFilter = 'all';
+let allPresets = [];
+
 async function loadPresets() {
   const grid = document.getElementById('preset-grid');
   const count = document.getElementById('preset-count');
@@ -177,27 +180,57 @@ async function loadPresets() {
   try {
     const res = await fetch('/api/presets');
     const data = await res.json();
-    const presets = data.data || [];
-    if (count) count.textContent = presets.length + ' 预设';
-    const cnPlatforms = new Set(['zhipu','zhipu-global','modelscope','qianfan','volcengine','longcat','xfyun','sail','radeon']);
-    const cnHosts = ['bigmodel', 'z.ai', 'modelscope', 'volces', 'xf-yun', 'baidubce', 'qianfan', 'bytedance', 'longcat', 'amd.com.cn'];
-    grid.innerHTML = presets.map(p => {
-      const isCN = cnPlatforms.has(p.platform) || cnHosts.some(h => p.baseUrl.includes(h));
-      const tags = [];
-      if (p.keyless) tags.push('<span class="tag tag-keyless">免 KEY</span>');
-      if (isCN) tags.push('<span class="tag tag-cn">国内</span>');
-      if (p.special) tags.push('<span class="tag tag-special">' + esc(p.name) + '</span>');
-      return '<div class="preset-card">' +
-        '<div class="preset-name">' + esc(p.name) + ' ' + tags.join(' ') + '</div>' +
-        '<div class="preset-url">' + esc(p.baseUrl) + '</div>' +
-        '<div class="preset-actions">' +
-        '<button class="primary" data-platform="' + esc(p.platform) + '" data-url="' + esc(p.baseUrl) + '" data-name="' + esc(p.name) + '" onclick="usePresetFromBtn(this)">使用</button>' +
-        '</div></div>';
-    }).join('');
+    allPresets = data.data || [];
+    if (count) count.textContent = allPresets.length + ' 预设';
+    renderPresets();
   } catch (e) {
     grid.innerHTML = '<div class="desc">预设加载失败: ' + esc(e.message) + '</div>';
   }
 }
+
+function renderPresets() {
+  const grid = document.getElementById('preset-grid');
+  if (!grid) return;
+  const cnPlatforms = new Set(['zhipu','zhipu-global','modelscope','qianfan','volcengine','longcat','xfyun','sail','radeon','qwen','stepfun','hunyuan','yi','minimax','baichuan','doubao-pro','wenxin','spark-v3','moonshot']);
+  const cnHosts = ['bigmodel', 'z.ai', 'modelscope', 'volces', 'xf-yun', 'baidubce', 'qianfan', 'longcat', 'amd.com.cn', 'moonshot.cn', 'aliyuncs.com', 'stepfun.com', 'tencent.com', 'lingyiwanwu', 'MiniMax.chat'];
+  let presets = allPresets;
+  if (presetFilter === 'cn') {
+    presets = presets.filter(p => cnPlatforms.has(p.platform) || cnHosts.some(h => p.baseUrl.includes(h)));
+  } else if (presetFilter !== 'all') {
+    presets = presets.filter(p => (p.tier || 'free') === presetFilter);
+  }
+  if (presets.length === 0) {
+    grid.innerHTML = '<div class="desc">该筛选下无预设</div>';
+    return;
+  }
+  grid.innerHTML = presets.map(p => {
+    const isCN = cnPlatforms.has(p.platform) || cnHosts.some(h => p.baseUrl.includes(h));
+    const tier = p.tier || 'free';
+    const tags = [];
+    if (p.keyless) tags.push('<span class="tag tag-keyless">免 KEY</span>');
+    if (isCN) tags.push('<span class="tag tag-cn">国内</span>');
+    if (p.special) tags.push('<span class="tag tag-special">特殊</span>');
+    const tierLabel = tier === 'paid' ? '付费' : (tier === 'freemium' ? '免费额度' : '免费');
+    const tierClass = 'tag-' + tier;
+    tags.push('<span class="tag ' + tierClass + '">' + tierLabel + '</span>');
+    return '<div class="preset-card">' +
+      '<div class="preset-name">' + esc(p.name) + ' ' + tags.join(' ') + '</div>' +
+      '<div class="preset-url">' + esc(p.baseUrl) + '</div>' +
+      (p.notes ? '<div style="font-size: 10px; color: var(--text-dim); margin-top: 2px;">' + esc(p.notes) + '</div>' : '') +
+      '<div class="preset-actions">' +
+      '<button class="primary" data-platform="' + esc(p.platform) + '" data-url="' + esc(p.baseUrl) + '" data-name="' + esc(p.name) + '" onclick="usePresetFromBtn(this)">使用</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+document.querySelectorAll('#preset-filters button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#preset-filters button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    presetFilter = b.getAttribute('data-tier');
+    renderPresets();
+  });
+});
 
 function usePresetFromBtn(btn) {
   const platform = btn.getAttribute('data-platform');
