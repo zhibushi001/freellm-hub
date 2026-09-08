@@ -19,252 +19,152 @@
       --warning: #d29922;
       --code-bg: #0d1117;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
+      background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh;
     }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    /* Header */
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
     header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 32px;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+    .logo { display: flex; align-items: center; gap: 12px; }
     .logo-icon {
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       background: linear-gradient(135deg, var(--accent), #a371f7);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: bold;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: bold;
     }
-
     h1 { font-size: 22px; font-weight: 600; }
     .version { color: var(--text-dim); font-size: 13px; margin-left: 8px; }
-
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 13px;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 20px; font-size: 13px;
     }
-
     .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-dim);
-      transition: background 0.3s;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-dim); transition: background 0.3s;
     }
-
     .status-dot.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
     .status-dot.err { background: var(--error); box-shadow: 0 0 8px var(--error); }
-
-    /* Stats grid */
     .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 32px;
     }
-
     .stat {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
     }
-
     .stat-label {
-      font-size: 12px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 12px; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
-
-    .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      margin-top: 4px;
-    }
-
+    .stat-value { font-size: 24px; font-weight: 600; margin-top: 4px; }
     .stat-value.small { font-size: 14px; font-family: ui-monospace, 'SF Mono', Consolas, monospace; }
-
-    /* Section */
-    section {
-      margin-bottom: 32px;
-    }
-
+    section { margin-bottom: 32px; }
     h2 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 16px; font-weight: 600; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
     }
-
     h2 .pill {
-      font-size: 11px;
-      padding: 2px 8px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text-dim);
-      font-weight: 400;
+      font-size: 11px; padding: 2px 8px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text-dim); font-weight: 400;
     }
-
-    /* Endpoint cards */
     .endpoint {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px; margin-bottom: 12px;
       transition: border-color 0.2s;
     }
-
     .endpoint:hover { border-color: var(--accent); }
-
     .endpoint-head {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
     }
-
     .method {
       font-family: ui-monospace, 'SF Mono', Consolas, monospace;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 4px;
-      min-width: 50px;
-      text-align: center;
+      font-size: 12px; font-weight: 600; padding: 3px 8px;
+      border-radius: 4px; min-width: 50px; text-align: center;
     }
-
     .method.get { background: rgba(63, 185, 80, 0.15); color: var(--success); }
     .method.post { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
-
-    .path {
-      font-family: ui-monospace, 'SF Mono', Consolas, monospace;
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    .desc {
-      color: var(--text-dim);
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    .method.del { background: rgba(248, 81, 73, 0.15); color: var(--error); }
+    .path { font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 14px; }
+    .desc { color: var(--text-dim); font-size: 13px; margin-bottom: 12px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
     button {
-      background: var(--bg-elev);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); padding: 6px 12px;
+      border-radius: 6px; font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
     }
-
     button:hover { background: var(--border); border-color: var(--accent); }
     button.primary { background: var(--accent); color: #0d1117; border-color: var(--accent); font-weight: 500; }
     button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-
+    button.danger { background: rgba(248, 81, 73, 0.15); color: var(--error); border-color: rgba(248, 81, 73, 0.3); }
+    button.danger:hover { background: rgba(248, 81, 73, 0.25); }
+    input, select, textarea {
+      background: var(--code-bg); color: var(--text);
+      border: 1px solid var(--border); padding: 8px 10px;
+      border-radius: 6px; font-size: 13px; font-family: inherit;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+    }
+    label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 4px; }
+    .form-row { margin-bottom: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .curl {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 12px;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px;
       font-family: ui-monospace, 'SF Mono', Consolas, monospace;
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 8px;
-      overflow-x: auto;
-      white-space: nowrap;
+      font-size: 12px; color: var(--text-dim); margin-top: 8px;
+      overflow-x: auto; white-space: pre;
     }
-
     .output {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 12px;
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px;
       font-family: ui-monospace, 'SF Mono', Consolas, monospace;
-      font-size: 12px;
-      color: var(--text);
-      margin-top: 8px;
-      max-height: 200px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
+      font-size: 12px; margin-top: 8px; max-height: 300px;
+      overflow: auto; white-space: pre-wrap; word-break: break-word;
     }
-
     .output:empty { display: none; }
-
     .output.ok { border-left: 3px solid var(--success); }
     .output.err { border-left: 3px solid var(--error); }
-
-    /* Footer */
-    footer {
-      margin-top: 48px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 13px;
-      text-align: center;
+    .provider-list { display: grid; gap: 8px; }
+    .provider-item {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-
+    .provider-item .info { flex: 1; min-width: 0; }
+    .provider-item .name { font-weight: 500; }
+    .provider-item .url { font-size: 12px; color: var(--text-dim); font-family: ui-monospace, monospace; word-break: break-all; }
+    .provider-item .badge {
+      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+      background: var(--success); color: #0d1117; font-weight: 600;
+    }
+    .provider-item .badge.off { background: var(--text-dim); }
+    footer {
+      margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border);
+      color: var(--text-dim); font-size: 13px; text-align: center;
+    }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
-
-    .badge-new {
-      font-size: 10px;
-      padding: 1px 6px;
-      background: var(--warning);
-      color: #0d1117;
-      border-radius: 8px;
-      font-weight: 600;
-      margin-left: 6px;
+    .tabs {
+      display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
     }
+    .tab {
+      padding: 8px 16px; cursor: pointer; color: var(--text-dim);
+      border-bottom: 2px solid transparent; font-size: 14px;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
   </style>
 </head>
 <body>
@@ -289,78 +189,171 @@
         <div class="stat-value" id="stat-mode">—</div>
       </div>
       <div class="stat">
-        <div class="stat-label">服务</div>
-        <div class="stat-value" id="stat-service">freellm-hub</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Models</div>
-        <div class="stat-value" id="stat-models">—</div>
+        <div class="stat-label">DB</div>
+        <div class="stat-value" id="stat-db">—</div>
       </div>
       <div class="stat">
         <div class="stat-label">Providers</div>
         <div class="stat-value" id="stat-providers">0</div>
       </div>
+      <div class="stat">
+        <div class="stat-label">Models (cache)</div>
+        <div class="stat-value" id="stat-models">0</div>
+      </div>
     </div>
 
-    <section>
-      <h2>核心端点 <span class="pill">M0</span></h2>
+    <div class="tabs">
+      <div class="tab active" data-tab="endpoints">端点</div>
+      <div class="tab" data-tab="providers">Providers</div>
+      <div class="tab" data-tab="chat">聊天测试</div>
+    </div>
 
-      <div class="endpoint">
-        <div class="endpoint-head">
-          <span class="method get">GET</span>
-          <span class="path">/health</span>
-        </div>
-        <div class="desc">服务健康检查，返回状态、版本、模式、实时时间戳。</div>
-        <div class="actions">
-          <button class="primary" onclick="callApi('/health', 'GET')">调用</button>
-          <button onclick="copyCurl('GET', '/health')">复制 curl</button>
-        </div>
-        <div class="curl" id="curl-GET-/health"></div>
-        <div class="output" id="out-GET-/health"></div>
-      </div>
+    <!-- Tab: Endpoints -->
+    <div class="tab-panel active" id="tab-endpoints">
+      <section>
+        <h2>OpenAI 兼容 <span class="pill">/v1</span></h2>
 
-      <div class="endpoint">
-        <div class="endpoint-head">
-          <span class="method get">GET</span>
-          <span class="path">/v1/ping</span>
+        <div class="endpoint">
+          <div class="endpoint-head">
+            <span class="method get">GET</span>
+            <span class="path">/v1/models</span>
+          </div>
+          <div class="desc">聚合所有 enabled provider 的模型，每个 id 格式为 <code>label:model_id</code>。</div>
+          <div class="actions">
+            <button class="primary" onclick="callApi('/v1/models', 'GET', null, 'models')">调用</button>
+            <button onclick="copyCurl('GET', '/v1/models')">复制 curl</button>
+          </div>
+          <div class="curl" id="curl-GET-/v1/models"></div>
+          <div class="output" id="out-models"></div>
         </div>
-        <div class="desc">OpenAI 风格的 API ping，返回时间戳。</div>
-        <div class="actions">
-          <button class="primary" onclick="callApi('/v1/ping', 'GET')">调用</button>
-          <button onclick="copyCurl('GET', '/v1/ping')">复制 curl</button>
-        </div>
-        <div class="curl" id="curl-GET-/v1/ping"></div>
-        <div class="output" id="out-GET-/v1/ping"></div>
-      </div>
 
-      <div class="endpoint">
-        <div class="endpoint-head">
-          <span class="method get">GET</span>
-          <span class="path">/v1/models</span>
+        <div class="endpoint">
+          <div class="endpoint-head">
+            <span class="method post">POST</span>
+            <span class="path">/v1/chat/completions</span>
+          </div>
+          <div class="desc">OpenAI 兼容的聊天补全。<code>model</code> 字段填 <code>label:model_id</code> 路由到指定 provider。stream=false only（M1）。</div>
+          <div class="actions">
+            <button onclick="copyCurl('POST', '/v1/chat/completions', sampleChatBody())">复制示例 curl</button>
+            <button class="primary" onclick="document.querySelector(\"[data-tab='chat']\").click()">→ 打开聊天测试</button>
+          </div>
+          <div class="curl" id="curl-POST-/v1/chat/completions"></div>
         </div>
-        <div class="desc">OpenAI 兼容的模型列表（M0 stub，M1 接入真实 provider 后返回完整列表）。</div>
-        <div class="actions">
-          <button class="primary" onclick="callApi('/v1/models', 'GET')">调用</button>
-          <button onclick="copyCurl('GET', '/v1/models')">复制 curl</button>
-        </div>
-        <div class="curl" id="curl-GET-/v1/models"></div>
-        <div class="output" id="out-GET-/v1/models"></div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <h2>聊天端点 <span class="pill">M1 即将上线</span><span class="badge-new">规划中</span></h2>
-      <div class="endpoint" style="opacity: 0.6;">
-        <div class="endpoint-head">
-          <span class="method post">POST</span>
-          <span class="path">/v1/chat/completions</span>
+      <section>
+        <h2>管理 API <span class="pill">/api</span></h2>
+
+        <div class="endpoint">
+          <div class="endpoint-head">
+            <span class="method get">GET</span>
+            <span class="path">/api/providers</span>
+          </div>
+          <div class="desc">列出所有 provider（不返回 api key）。</div>
+          <div class="actions">
+            <button class="primary" onclick="callApi('/api/providers', 'GET', null, 'providers')">调用</button>
+            <button onclick="copyCurl('GET', '/api/providers')">复制 curl</button>
+          </div>
+          <div class="curl" id="curl-GET-/api/providers"></div>
         </div>
-        <div class="desc">OpenAI 兼容的聊天补全端点。将在 M1 实现：接受任意 OpenAI 客户端请求，自动路由到配置的 provider（Zhipu / DeepSeek / OpenAI 兼容 API 等）。</div>
-        <div class="actions">
-          <button disabled>暂未实现</button>
+
+        <div class="endpoint">
+          <div class="endpoint-head">
+            <span class="method get">GET</span>
+            <span class="path">/health</span>
+          </div>
+          <div class="desc">健康检查。</div>
+          <div class="actions">
+            <button class="primary" onclick="callApi('/health', 'GET', null, 'health')">调用</button>
+          </div>
+          <div class="curl" id="curl-GET-/health"></div>
+          <div class="output" id="out-health"></div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
+
+    <!-- Tab: Providers -->
+    <div class="tab-panel" id="tab-providers">
+      <section>
+        <h2>添加 Provider</h2>
+        <div class="endpoint">
+          <p class="desc" style="margin-bottom: 16px;">
+            API key 用 AES-256-GCM 加密存到 SQLite。任何 OpenAI 兼容端点都支持（Zhipu、DeepSeek、Moonshot、OpenAI、Groq、Mistral…）。
+          </p>
+          <div class="form-row">
+            <label>Label (用来当 model 前缀，如 "zhipu")</label>
+            <input id="add-label" placeholder="zhipu" />
+          </div>
+          <div class="form-row">
+            <label>Base URL</label>
+            <input id="add-baseUrl" placeholder="https://open.bigmodel.cn/api/paas/v4" />
+          </div>
+          <div class="grid-2">
+            <div class="form-row">
+              <label>Chat path (默认 /chat/completions)</label>
+              <input id="add-apiPath" value="/chat/completions" />
+            </div>
+            <div class="form-row">
+              <label>Models path (默认 /models)</label>
+              <input id="add-modelsPath" value="/models" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>API Key</label>
+            <input id="add-apiKey" type="password" placeholder="sk-..." />
+          </div>
+          <div class="form-row">
+            <label>备注 (可选)</label>
+            <input id="add-notes" placeholder="比如：智谱 GLM 免费层" />
+          </div>
+          <div class="actions">
+            <button class="primary" onclick="addProvider()">添加</button>
+            <button onclick="document.getElementById('add-label').value=''; document.getElementById('add-baseUrl').value=''; document.getElementById('add-apiKey').value=''">清空</button>
+          </div>
+          <div class="output" id="out-add-provider"></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>现有 Providers <button class="primary" style="margin-left: auto; font-size: 12px;" onclick="loadProviders()">刷新</button></h2>
+        <div class="provider-list" id="provider-list">
+          <div class="desc">加载中...</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab: Chat Test -->
+    <div class="tab-panel" id="tab-chat">
+      <section>
+        <h2>聊天测试</h2>
+        <div class="endpoint">
+          <p class="desc" style="margin-bottom: 16px;">直接对 hub 发 OpenAI 兼容请求，hub 会路由到对应 provider。</p>
+          <div class="form-row">
+            <label>Model (格式: <code>label:model_id</code> 或纯 <code>model_id</code>)</label>
+            <input id="chat-model" placeholder="zhipu:glm-4-flash" />
+          </div>
+          <div class="form-row">
+            <label>用户消息</label>
+            <textarea id="chat-message" rows="4" placeholder="用一句话介绍你自己">用一句话介绍你自己</textarea>
+          </div>
+          <div class="grid-2">
+            <div class="form-row">
+              <label>Temperature</label>
+              <input id="chat-temp" type="number" step="0.1" min="0" max="2" value="0.7" />
+            </div>
+            <div class="form-row">
+              <label>Max tokens</label>
+              <input id="chat-max" type="number" value="200" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" onclick="testChat()">发送</button>
+            <button onclick="document.getElementById('out-chat').textContent = ''">清空输出</button>
+          </div>
+          <div class="output" id="out-chat"></div>
+        </div>
+      </section>
+    </div>
 
     <footer>
       <p>
@@ -368,55 +361,52 @@
         <a href="https://github.com/songquanpeng/one-api" target="_blank">one-api</a> ·
         <a href="https://github.com/open-free-llm-api/awesome-freellm-apis" target="_blank">awesome-freellm-apis</a>
       </p>
-      <p style="margin-top: 6px;">Personal project · MIT License · <a href="https://github.com/zhibushi001/freellm-hub" target="_blank">zhibushi001/freellm-hub</a></p>
+      <p style="margin-top: 6px;">Personal project · MIT · <a href="https://github.com/zhibushi001/freellm-hub" target="_blank">zhibushi001/freellm-hub</a></p>
     </footer>
   </div>
 
   <script>
-    const apiBase = '';  // same origin
-
-    // Render curl templates
     function renderCurlTemplates() {
-      [['GET', '/health'], ['GET', '/v1/ping'], ['GET', '/v1/models']].forEach(([m, p]) => {
-        const el = document.getElementById('curl-' + m + '-' + p);
-        if (el) el.textContent = `curl ${location.origin}${p}`;
-      });
+      document.getElementById('curl-GET-/v1/models').textContent = `curl ${location.origin}/v1/models`;
+      document.getElementById('curl-GET-/api/providers').textContent = `curl ${location.origin}/api/providers`;
+      document.getElementById('curl-GET-/health').textContent = `curl ${location.origin}/health`;
+      document.getElementById('curl-POST-/v1/chat/completions').textContent =
+        `curl -X POST ${location.origin}/v1/chat/completions \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"zhipu:glm-4-flash","messages":[{"role":"user","content":"hi"}]}'`;
     }
 
-    async function callApi(path, method = 'GET', body = null) {
-      const out = document.getElementById('out-' + method + '-' + path);
-      out.textContent = '加载中...';
-      out.className = 'output';
+    async function callApi(path, method = 'GET', body = null, targetId = null) {
+      const outId = 'out-' + (targetId || (method + '-' + path));
+      const out = document.getElementById(outId);
+      if (out) { out.textContent = '加载中...'; out.className = 'output'; }
       try {
         const opts = { method, headers: {} };
-        if (body) {
-          opts.headers['Content-Type'] = 'application/json';
-          opts.body = JSON.stringify(body);
-        }
+        if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
         const res = await fetch(path, opts);
         const text = await res.text();
         let pretty = text;
         try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
-        out.textContent = `[HTTP ${res.status}]\n${pretty}`;
-        out.className = 'output ' + (res.ok ? 'ok' : 'err');
-        return res;
+        if (out) { out.textContent = `[HTTP ${res.status}]\n${pretty}`; out.className = 'output ' + (res.ok ? 'ok' : 'err'); }
+        return { res, data: JSON.parse(text) };
       } catch (e) {
-        out.textContent = '[Network error] ' + e.message;
-        out.className = 'output err';
+        if (out) { out.textContent = '[Network error] ' + e.message; out.className = 'output err'; }
+        return null;
       }
     }
 
-    async function copyCurl(method, path) {
-      const cmd = `curl ${location.origin}${path}`;
+    function sampleChatBody() {
+      return { model: 'zhipu:glm-4-flash', messages: [{ role: 'user', content: 'hi' }] };
+    }
+
+    async function copyCurl(method, path, body = null) {
+      let cmd = `curl -X ${method} ${location.origin}${path}`;
+      if (body) cmd += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(body).replace(/'/g, "'\\''")}'`;
       try {
         await navigator.clipboard.writeText(cmd);
         const btn = event.target;
         const orig = btn.textContent;
         btn.textContent = '✓ 已复制';
         setTimeout(() => { btn.textContent = orig; }, 1200);
-      } catch (e) {
-        alert('复制失败：' + e.message);
-      }
+      } catch (e) { alert('复制失败：' + e.message); }
     }
 
     async function refreshStatus() {
@@ -429,37 +419,146 @@
           dot.className = 'status-dot ok';
           txt.textContent = '运行中';
           document.getElementById('stat-mode').textContent = data.mode || 'default';
-          document.getElementById('stat-service').textContent = data.service || 'freellm-hub';
+          document.getElementById('stat-db').textContent = data.db || 'memory';
         } else {
-          dot.className = 'status-dot err';
-          txt.textContent = '异常';
+          dot.className = 'status-dot err'; txt.textContent = '异常';
         }
       } catch {
-        dot.className = 'status-dot err';
-        txt.textContent = '离线';
+        dot.className = 'status-dot err'; txt.textContent = '离线';
       }
     }
 
-    async function refreshModels() {
-      try {
-        const res = await fetch('/v1/models');
-        const data = await res.json();
-        if (res.ok && data.data) {
-          document.getElementById('stat-models').textContent = data.data.length;
-          const provs = new Set();
-          data.data.forEach(m => {
-            if (m.owned_by) provs.add(m.owned_by);
-          });
-          document.getElementById('stat-providers').textContent = provs.size;
-        }
-      } catch {}
+    async function loadProviders() {
+      const result = await callApi('/api/providers', 'GET', null, null);
+      const list = document.getElementById('provider-list');
+      if (!result || !result.res.ok) {
+        list.innerHTML = '<div class="desc">加载失败</div>';
+        return;
+      }
+      const providers = result.data.data || [];
+      document.getElementById('stat-providers').textContent = providers.length;
+      if (providers.length === 0) {
+        list.innerHTML = '<div class="desc">还没添加 provider。<a href="javascript:document.querySelector(\'[data-tab=&quot;providers&quot;]\').click()">添加一个</a></div>';
+        return;
+      }
+      list.innerHTML = providers.map(p => `
+        <div class="provider-item">
+          <div class="info">
+            <div class="name">${escapeHtml(p.label)} ${p.isBuiltin ? '<span class="badge">built-in</span>' : ''}
+              <span class="badge ${p.enabled ? '' : 'off'}">${p.enabled ? 'enabled' : 'disabled'}</span>
+            </div>
+            <div class="url">${escapeHtml(p.baseUrl)}${escapeHtml(p.apiPath || '')}</div>
+            ${p.notes ? `<div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">${escapeHtml(p.notes)}</div>` : ''}
+          </div>
+          <div class="actions">
+            <button onclick="toggleProvider('${p.id}', ${!p.enabled})">${p.enabled ? '禁用' : '启用'}</button>
+            <button class="danger" onclick="deleteProvider('${p.id}')">删除</button>
+          </div>
+        </div>
+      `).join('');
     }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function addProvider() {
+      const body = {
+        label: document.getElementById('add-label').value.trim(),
+        baseUrl: document.getElementById('add-baseUrl').value.trim(),
+        apiPath: document.getElementById('add-apiPath').value.trim() || '/chat/completions',
+        modelsPath: document.getElementById('add-modelsPath').value.trim() || '/models',
+        apiKey: document.getElementById('add-apiKey').value,
+        notes: document.getElementById('add-notes').value.trim() || null,
+      };
+      if (!body.label || !body.baseUrl || !body.apiKey) {
+        const out = document.getElementById('out-add-provider');
+        out.textContent = 'Error: label, baseUrl, apiKey 必填';
+        out.className = 'output err';
+        return;
+      }
+      const result = await callApi('/api/providers', 'POST', body, 'add-provider');
+      if (result && result.res.ok) {
+        document.getElementById('add-label').value = '';
+        document.getElementById('add-baseUrl').value = '';
+        document.getElementById('add-apiKey').value = '';
+        document.getElementById('add-notes').value = '';
+        loadProviders();
+      }
+    }
+
+    async function deleteProvider(id) {
+      if (!confirm('确定删除这个 provider？')) return;
+      const res = await fetch('/api/providers/' + id, { method: 'DELETE' });
+      if (res.ok || res.status === 204) loadProviders();
+    }
+
+    async function toggleProvider(id, enabled) {
+      const res = await fetch('/api/providers/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      });
+      if (res.ok) loadProviders();
+    }
+
+    async function testChat() {
+      const model = document.getElementById('chat-model').value.trim();
+      const message = document.getElementById('chat-message').value;
+      const temperature = parseFloat(document.getElementById('chat-temp').value);
+      const max_tokens = parseInt(document.getElementById('chat-max').value, 10);
+      if (!model || !message) {
+        const out = document.getElementById('out-chat');
+        out.textContent = 'Error: model 和 message 必填';
+        out.className = 'output err';
+        return;
+      }
+      const out = document.getElementById('out-chat');
+      out.textContent = '发送中...';
+      out.className = 'output';
+      const start = Date.now();
+      try {
+        const res = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: 'user', content: message }],
+            temperature,
+            max_tokens,
+          }),
+        });
+        const data = await res.json();
+        const ms = Date.now() - start;
+        if (res.ok) {
+          const reply = data.choices?.[0]?.message?.content || '(no content)';
+          out.textContent = `[HTTP ${res.status} · ${ms}ms]\n\n${reply}\n\n--- raw ---\n${JSON.stringify(data, null, 2)}`;
+          out.className = 'output ok';
+        } else {
+          out.textContent = `[HTTP ${res.status} · ${ms}ms]\n${JSON.stringify(data, null, 2)}`;
+          out.className = 'output err';
+        }
+      } catch (e) {
+        out.textContent = '[Network error] ' + e.message;
+        out.className = 'output err';
+      }
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+        if (t.dataset.tab === 'providers') loadProviders();
+      });
+    });
 
     renderCurlTemplates();
     refreshStatus();
-    refreshModels();
-
-    // Auto refresh status every 30s
+    loadProviders();
     setInterval(refreshStatus, 30000);
   </script>
 </body>

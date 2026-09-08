@@ -1,11 +1,17 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import { env } from './env.js';
+import { getDb } from './db/index.js';
 import { modelsRouter } from './routes/v1/models.js';
 import { pingRouter } from './routes/v1/ping.js';
+import { chatRouter } from './routes/v1/chat.js';
+import { providersRouter } from './routes/api/providers.js';
 
 export const createApp = (): Express => {
   const app = express();
+
+  // Initialize DB (creates schema on first run)
+  getDb();
 
   // Middleware
   app.use(cors());
@@ -28,7 +34,8 @@ export const createApp = (): Express => {
       status: 'ok',
       service: 'freellm-hub',
       version: '0.1.0',
-      mode: 'live-reload-demo',  // ← 改了这里，看热重载
+      mode: 'm1-chat',
+      db: 'sqlite',
       timestamp: new Date().toISOString(),
     });
   });
@@ -36,6 +43,10 @@ export const createApp = (): Express => {
   // OpenAI-compatible routes
   app.use('/v1', pingRouter);
   app.use('/v1', modelsRouter);
+  app.use('/v1', chatRouter);
+
+  // Management API
+  app.use('/api', providersRouter);
 
   // 404
   app.use((_req, res) => {
