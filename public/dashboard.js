@@ -170,6 +170,54 @@ function clearAddForm() {
   ['add-label','add-baseUrl','add-apiKey','add-notes'].forEach(id => document.getElementById(id).value = '');
 }
 
+async function loadPresets() {
+  const grid = document.getElementById('preset-grid');
+  const count = document.getElementById('preset-count');
+  if (!grid) return;
+  try {
+    const res = await fetch('/api/presets');
+    const data = await res.json();
+    const presets = data.data || [];
+    if (count) count.textContent = presets.length + ' 预设';
+    const cnPlatforms = new Set(['zhipu','zhipu-global','modelscope','qianfan','volcengine','longcat','xfyun','sail','radeon']);
+    const cnHosts = ['bigmodel', 'z.ai', 'modelscope', 'volces', 'xf-yun', 'baidubce', 'qianfan', 'bytedance', 'longcat', 'amd.com.cn'];
+    grid.innerHTML = presets.map(p => {
+      const isCN = cnPlatforms.has(p.platform) || cnHosts.some(h => p.baseUrl.includes(h));
+      const tags = [];
+      if (p.keyless) tags.push('<span class="tag tag-keyless">免 KEY</span>');
+      if (isCN) tags.push('<span class="tag tag-cn">国内</span>');
+      if (p.special) tags.push('<span class="tag tag-special">' + esc(p.name) + '</span>');
+      return '<div class="preset-card">' +
+        '<div class="preset-name">' + esc(p.name) + ' ' + tags.join(' ') + '</div>' +
+        '<div class="preset-url">' + esc(p.baseUrl) + '</div>' +
+        '<div class="preset-actions">' +
+        '<button class="primary" data-platform="' + esc(p.platform) + '" data-url="' + esc(p.baseUrl) + '" data-name="' + esc(p.name) + '" onclick="usePresetFromBtn(this)">使用</button>' +
+        '</div></div>';
+    }).join('');
+  } catch (e) {
+    grid.innerHTML = '<div class="desc">预设加载失败: ' + esc(e.message) + '</div>';
+  }
+}
+
+function usePresetFromBtn(btn) {
+  const platform = btn.getAttribute('data-platform');
+  const baseUrl = btn.getAttribute('data-url');
+  const name = btn.getAttribute('data-name');
+  usePreset(platform, baseUrl, name);
+}
+
+function usePreset(platform, baseUrl, name) {
+  document.getElementById('add-label').value = platform;
+  document.getElementById('add-baseUrl').value = baseUrl;
+  document.getElementById('add-apiPath').value = '/chat/completions';
+  document.getElementById('add-modelsPath').value = '/models';
+  document.getElementById('add-apiKey').value = '';
+  document.getElementById('add-apiKey').placeholder = name + ' 的 API key (或留空用免 KEY)...';
+  document.getElementById('add-notes').value = 'preset: ' + name;
+  document.getElementById('add-apiKey').focus();
+  document.getElementById('add-label').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 async function deleteProvider(id) { if (!confirm('确定删除？')) return; await fetch('/api/providers/' + id, { method: 'DELETE' }); loadProviders(); }
 async function toggleProvider(id, enabled) { await fetch('/api/providers/' + id, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({enabled}) }); loadProviders(); }
 
@@ -320,7 +368,7 @@ document.querySelectorAll('.tab').forEach(t => {
     document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById('tab-' + t.dataset.tab).classList.add('active');
-    if (t.dataset.tab === 'providers') loadProviders();
+    if (t.dataset.tab === 'providers') { loadProviders(); loadPresets(); }
     if (t.dataset.tab === 'keys') loadHubKeys();
   });
 });
@@ -329,5 +377,6 @@ updateKeyDisplay();
 renderCurlTemplates();
 refreshStatus();
 loadProviders();
+loadPresets();
 loadHubKeys();
 setInterval(refreshStatus, 30000);
