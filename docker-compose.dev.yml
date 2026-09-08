@@ -1,0 +1,33 @@
+# Development: mount source for hot reload (tsx watch)
+services:
+  freellm-hub-dev:
+    # Reuse the production image's runtime (node, OS, nonroot user)
+    # but mount host node_modules so tsx + devDeps work without rebuilding
+    image: freellm-hub:latest
+    container_name: freellm-hub-dev
+    working_dir: /app
+    user: "0:0"  # root, so we can write into /app from the mounted source
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      PORT: "3030"
+      HOST: "0.0.0.0"
+      DATABASE_PATH: /app/data/freellm-hub.db
+    ports:
+      - "0.0.0.0:3030:3030"
+    volumes:
+      # Source code → live reload (host overwrites image)
+      - ./src:/app/src
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./package.json:/app/package.json:ro
+      # Host's node_modules (already has tsx, supertest, etc.)
+      - ./node_modules:/app/node_modules
+      # Persist data
+      - hub-dev-data:/app/data
+    command: ["npx", "tsx", "watch", "src/index.ts"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  hub-dev-data:
