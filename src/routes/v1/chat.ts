@@ -7,14 +7,7 @@ import type { ChatRequest, ModelInfo, Provider } from '../../providers/base.js';
 export const chatRouter = Router();
 
 // POST /v1/chat/completions — OpenAI-compatible
-// Body:
-//   {
-//     model: "provider_label:model_id" | "model_id",   // if no provider, picks first enabled
-//     messages: [...],
-//     temperature?, top_p?, max_tokens?, stream? (M1: not supported, returns error)
-//   }
-// Headers:
-//   Authorization: Bearer <hub-key>  (M1: optional, just routes by model)
+// Auth: requires Authorization: Bearer fh_... (applied at server level)
 chatRouter.post('/chat/completions', async (req, res) => {
   const body = req.body as Partial<ChatRequest> | undefined;
   if (!body || !body.model || !Array.isArray(body.messages) || body.messages.length === 0) {
@@ -23,48 +16,84 @@ chatRouter.post('/chat/completions', async (req, res) => {
     });
     return;
   }
-  if (body.stream) {
-    res.status(501).json({
-      error: { message: 'Streaming not yet supported in M1. Set stream=false.' },
-    });
-    return;
-  }
 
-  const { provider, modelId } = pickProvider(body.model);
-  if (!provider) {
+  const wantStream = !!body.stream;
+
+  // Find all candidate providers, in priority order
+  const candidates = pickProviders(body.model);
+  if (candidates.length === 0) {
     res.status(404).json({
       error: {
-        message: `No enabled provider can serve model "${body.model}". Add a provider first via POST /api/providers.`,
+        message: `No enabled provider can serve model "${body.model}". Add a provider via POST /api/providers.`,
       },
     });
     return;
   }
 
-  const start = Date.now();
-  try {
-    const response = await provider.chat({
-      model: modelId,
-      messages: body.messages,
-      temperature: body.temperature,
-      top_p: body.top_p,
-      max_tokens: body.max_tokens,
-      stop: body.stop,
-      presence_penalty: body.presence_penalty,
-      frequency_penalty: body.frequency_penalty,
-      user: body.user,
-    });
-    logRequest(provider.id, body.model, 200, Date.now() - start);
-    res.json(response);
-  } catch (e) {
-    const msg = (e as Error).message;
-    logRequest(provider.id, body.model, 500, Date.now() - start, msg);
-    res.status(502).json({ error: { message: msg, type: 'upstream_error' } });
+  // Try each candidate in order; on failure, move to next
+  let lastError: Error | null = null;
+  for (const { provider, modelId } of candidates) {
+    if (wantStream) {
+      // Stream mode: set headers once, then forward
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering
+      res.flushHeaders?.();
+      const start = Date.now();
+      try {
+        await provider.chatStream(
+          { ...body, model: modelId, stream: true } as ChatRequest,
+          (raw) => {
+            res.write(raw);
+          },
+          // Allow client to abort — close handler
+        );
+        logRequest(provider.id, body.model ?? '', 200, Date.now() - start);
+        return; // success, done
+      } catch (e) {
+        lastError = e as Error;
+        logRequest(provider.id, body.model ?? '', 500, Date.now() - start, lastError.message);
+        // Send error as SSE event and bail
+        try {
+          res.write(
+            `data: ${JSON.stringify({ error: { message: lastError.message, type: 'upstream_error' } })}\n\n`,
+          );
+          res.write('data: [DONE]\n\n');
+        } catch {
+          // ignore
+        }
+        return; // stream already started, can't try next provider
+      }
+    } else {
+      // Non-streaming
+      const start = Date.now();
+      try {
+        const response = await provider.chat({
+          ...body,
+          model: modelId,
+          stream: false,
+        } as ChatRequest);
+        logRequest(provider.id, body.model ?? '', 200, Date.now() - start);
+        res.json(response);
+        return;
+      } catch (e) {
+        lastError = e as Error;
+        logRequest(provider.id, body.model ?? '', 500, Date.now() - start, lastError.message);
+        // Try next candidate
+      }
+    }
   }
+  // All candidates failed
+  res.status(502).json({
+    error: {
+      message: `All ${candidates.length} candidate(s) failed. Last error: ${lastError?.message ?? 'unknown'}`,
+      type: 'upstream_error',
+    },
+  });
 });
 
 // /v1/models — aggregate from all enabled providers
-// For each enabled provider, fetch its /models and prefix with "label:" so callers can disambiguate.
-// Cache in DB for 5 minutes to avoid hammering providers on every call.
 const MODELS_CACHE_MS = 5 * 60 * 1000;
 
 interface ModelRow {
@@ -72,7 +101,12 @@ interface ModelRow {
   fetched_at: number;
 }
 
-async function loadModelsForProvider(provider: Provider, _baseUrl: string, _modelsPath: string, db: ReturnType<typeof getDb>): Promise<ModelInfo[]> {
+async function loadModelsForProvider(
+  provider: Provider,
+  _baseUrl: string,
+  _modelsPath: string,
+  db: ReturnType<typeof getDb>,
+): Promise<ModelInfo[]> {
   const cached = db
     .prepare('SELECT model_id, fetched_at FROM provider_models WHERE provider_id = ?')
     .all(provider.id) as ModelRow[];
@@ -84,12 +118,13 @@ async function loadModelsForProvider(provider: Provider, _baseUrl: string, _mode
       owned_by: provider.label,
     }));
   }
-  // Fetch fresh
   try {
     const models = await provider.listModels();
     const tx = db.transaction(() => {
       db.prepare('DELETE FROM provider_models WHERE provider_id = ?').run(provider.id);
-      const ins = db.prepare('INSERT INTO provider_models (provider_id, model_id, fetched_at) VALUES (?, ?, ?)');
+      const ins = db.prepare(
+        'INSERT INTO provider_models (provider_id, model_id, fetched_at) VALUES (?, ?, ?)',
+      );
       const now = Date.now();
       for (const m of models) ins.run(provider.id, m.id, now);
     });
@@ -100,7 +135,6 @@ async function loadModelsForProvider(provider: Provider, _baseUrl: string, _mode
       owned_by: provider.label,
     }));
   } catch (e) {
-    // Fall back to stale cache
     if (cached.length > 0) {
       return cached.map((r) => ({
         id: `${provider.label}:${r.model_id}`,
@@ -112,63 +146,66 @@ async function loadModelsForProvider(provider: Provider, _baseUrl: string, _mode
   }
 }
 
-// Helper: pick provider for a given model string
-// Format: "label:model_id" or just "model_id" (uses first enabled provider that has it)
-function pickProvider(modelStr: string): { provider: Provider | null; modelId: string } {
+// Find all candidate providers for a model, ordered by priority
+function pickProviders(modelStr: string): { provider: Provider; modelId: string }[] {
   const db = getDb();
   const rows = db
     .prepare('SELECT * FROM providers WHERE enabled = 1 ORDER BY is_builtin DESC, label ASC')
-    .all() as { id: string; label: string; base_url: string; api_path: string; models_path: string }[];
+    .all() as {
+    id: string;
+    label: string;
+    base_url: string;
+    api_path: string;
+    models_path: string;
+  }[];
 
-  // Try "label:model_id" match
+  const make = (row: (typeof rows)[number], modelId: string): { provider: Provider; modelId: string } | null => {
+    const apiKey = getProviderKey(row.id);
+    if (!apiKey) return null;
+    return {
+      provider: new OpenAICompatibleProvider({
+        id: row.id,
+        label: row.label,
+        baseUrl: row.base_url,
+        apiPath: row.api_path,
+        modelsPath: row.models_path,
+        apiKey,
+      }),
+      modelId,
+    };
+  };
+
+  // "label:model_id" → match that specific provider
   if (modelStr.includes(':')) {
     const [label, ...rest] = modelStr.split(':');
     const modelId = rest.join(':');
     const row = rows.find((r) => r.label === label);
-    if (row) {
-      const apiKey = getProviderKey(row.id);
-      if (apiKey) {
-        return {
-          provider: new OpenAICompatibleProvider({
-            id: row.id,
-            label: row.label,
-            baseUrl: row.base_url,
-            apiPath: row.api_path,
-            modelsPath: row.models_path,
-            apiKey,
-          }),
-          modelId,
-        };
-      }
-    }
-    return { provider: null, modelId };
+    if (!row) return [];
+    const p = make(row, modelId);
+    return p ? [p] : [];
   }
 
-  // No prefix — try each provider in order, asking if model_id is in its catalog
+  // Otherwise try each provider that has this model in its catalog
+  const candidates: { provider: Provider; modelId: string }[] = [];
   for (const row of rows) {
-    const apiKey = getProviderKey(row.id);
-    if (!apiKey) continue;
     const has = db
       .prepare('SELECT 1 FROM provider_models WHERE provider_id = ? AND model_id = ?')
       .get(row.id, modelStr);
     if (has) {
-      return {
-        provider: new OpenAICompatibleProvider({
-          id: row.id,
-          label: row.label,
-          baseUrl: row.base_url,
-          apiPath: row.api_path,
-          modelsPath: row.models_path,
-          apiKey,
-        }),
-        modelId: modelStr,
-      };
+      const p = make(row, modelStr);
+      if (p) candidates.push(p);
     }
   }
-  return { provider: null, modelId: modelStr };
+  return candidates;
 }
 
-function logRequest(providerId: string | null, model: string, status: number, durationMs: number, error?: string) {
+function logRequest(
+  providerId: string | null,
+  model: string,
+  status: number,
+  durationMs: number,
+  error?: string,
+) {
   try {
     getDb()
       .prepare(
@@ -176,9 +213,8 @@ function logRequest(providerId: string | null, model: string, status: number, du
       )
       .run(providerId, model, status, durationMs, error ?? null, Date.now());
   } catch {
-    // best-effort logging
+    // best-effort
   }
 }
 
-// Re-export for the v1/models route override
 export { loadModelsForProvider };
