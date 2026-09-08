@@ -103,25 +103,171 @@ async function refreshStatus() {
 async function loadProviders() {
   const result = await callApi('/api/providers', 'GET', null, null);
   const list = document.getElementById('provider-list');
+  const wizard = document.getElementById('setup-wizard');
   if (!result || !result.res.ok) { list.innerHTML = '<div class="desc">加载失败</div>'; return; }
   const providers = (result.data && result.data.data) || [];
   document.getElementById('stat-providers').textContent = providers.length;
+  // Empty state → show 3-step wizard
   if (providers.length === 0) {
-    list.innerHTML = '<div class="desc">还没添加 provider。点上方表单加一个。</div>';
+    wizard.innerHTML = renderSetupWizard();
+    list.innerHTML = '';
     return;
   }
+  wizard.innerHTML = '';
+  // Render each provider as a card with status + actions + model sublist
   list.innerHTML = providers.map(p => `
-    <div class="provider-item">
-      <div class="info">
-        <div class="name">${esc(p.label)} <span class="badge ${p.enabled ? '' : 'off'}">${p.enabled ? 'enabled' : 'disabled'}</span></div>
-        <div class="url">${esc(p.baseUrl)}${esc(p.apiPath || '')}</div>
-        ${p.notes ? `<div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">${esc(p.notes)}</div>` : ''}
+    <div class="provider-card" data-provider-id="${esc(p.id)}">
+      <div class="head">
+        <div class="info">
+          <div class="name">
+            ${esc(p.label)}
+            <span class="badge ${p.enabled ? '' : 'off'}">${p.enabled ? 'enabled' : 'disabled'}</span>
+          </div>
+          <div class="url">${esc(p.baseUrl)}${esc(p.apiPath || '')}</div>
+          ${p.notes ? `<div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">${esc(p.notes)}</div>` : ''}
+        </div>
+        <div class="actions">
+          <button onclick="refreshProviderModels('${p.id}')" title="从上游重新获取模型列表">🔄 刷新</button>
+          <button onclick="testProvider('${p.id}', this)" title="发一个 ping 测延迟">⚡ 测速</button>
+          <button onclick="toggleProvider('${p.id}', ${!p.enabled})">${p.enabled ? '禁用' : '启用'}</button>
+          <button class="danger" onclick="deleteProvider('${p.id}')">删除</button>
+        </div>
       </div>
-      <div class="actions">
-        <button onclick="toggleProvider('${p.id}', ${!p.enabled})">${p.enabled ? '禁用' : '启用'}</button>
-        <button class="danger" onclick="deleteProvider('${p.id}')">删除</button>
-      </div>
+      <div class="test-result" id="test-result-${esc(p.id)}"></div>
+      <div class="model-list" id="models-${esc(p.id)}"><div class="desc" style="font-size: 11px;">加载模型列表...</div></div>
     </div>`).join('');
+  // Async load each provider's cached models
+  providers.forEach(p => loadProviderModels(p.id));
+}
+
+async function loadProviderModels(providerId) {
+  const r = await callApi('/api/providers/' + providerId + '/models', 'GET', null, null);
+  const target = document.getElementById('models-' + providerId);
+  if (!target) return;
+  if (!r || !r.res.ok) { target.innerHTML = '<div class="desc" style="font-size: 11px;">加载失败</div>'; return; }
+  const data = r.data.data;
+  const models = data.models || [];
+  if (models.length === 0) {
+    target.innerHTML = '<div class="head"><span class="label">模型列表 (0)</span>' +
+      '<div class="actions"><button onclick="refreshProviderModels(\'' + providerId + '\')" title="从上游获取">+ 从上游获取</button></div></div>' +
+      '<div class="desc" style="font-size: 11px;">点 “从上游获取” 拉一次完整模型列表，或点顶部 🔄。</div>';
+    return;
+  }
+  target.innerHTML = `
+    <div class="head">
+      <span class="label">模型列表 (${models.length})</span>
+      <div class="actions">
+        <button onclick="toggleAllModels('${providerId}', true)">全选</button>
+        <button onclick="toggleAllModels('${providerId}', false)">全不选</button>
+        <button onclick="refreshProviderModels('${providerId}')" title="从上游重新拉取">🔄 从上游</button>
+      </div>
+    </div>
+    ${models.map(m => `
+      <div class="model-row">
+        <input type="checkbox" data-provider-id="${esc(providerId)}" data-model-id="${esc(m.id)}" onchange="updateBatchBar('${providerId}')" />
+        <span class="id" title="${esc(m.id)}">${esc(m.id)}</span>
+        <button class="danger" onclick="deleteOneModel('${providerId}', '${esc(m.id)}')">删除</button>
+      </div>`).join('')}
+    <div class="batch-bar" id="batch-bar-${esc(providerId)}">
+      <span>已选 <b id="batch-count-${esc(providerId)}">0</b> 个</span>
+      <button class="danger" onclick="bulkDeleteModels('${providerId}')">批量删除</button>
+      <button onclick="toggleAllModels('${providerId}', false)">取消</button>
+    </div>`;
+}
+
+function updateBatchBar(providerId) {
+  const checked = document.querySelectorAll(`input[data-provider-id="${CSS.escape(providerId)}"]:checked`).length;
+  const bar = document.getElementById('batch-bar-' + providerId);
+  const cnt = document.getElementById('batch-count-' + providerId);
+  if (bar) bar.classList.toggle('visible', checked > 0);
+  if (cnt) cnt.textContent = checked;
+}
+
+function toggleAllModels(providerId, on) {
+  document.querySelectorAll(`input[data-provider-id="${CSS.escape(providerId)}"]`).forEach(cb => { cb.checked = on; });
+  updateBatchBar(providerId);
+}
+
+async function deleteOneModel(providerId, modelId) {
+  if (!confirm('删除模型 ' + modelId + ' ？')) return;
+  const r = await callApi('/api/providers/' + providerId + '/models', 'DELETE', { ids: [modelId] }, null);
+  if (r && r.res.ok) loadProviderModels(providerId);
+}
+
+async function bulkDeleteModels(providerId) {
+  const ids = Array.from(document.querySelectorAll(`input[data-provider-id="${CSS.escape(providerId)}"]:checked`)).map(cb => cb.getAttribute('data-model-id'));
+  if (ids.length === 0) return;
+  if (!confirm('批量删除 ' + ids.length + ' 个模型？')) return;
+  const r = await callApi('/api/providers/' + providerId + '/models', 'DELETE', { ids }, null);
+  if (r && r.res.ok) {
+    if (r.data && r.data.data) showStatus('已删除 ' + r.data.data.deleted + ' 个模型', 'ok');
+    loadProviderModels(providerId);
+  }
+}
+
+async function refreshProviderModels(providerId) {
+  showStatus('从上游拉取模型...', 'ok');
+  const r = await callApi('/api/providers/' + providerId + '/refresh-models', 'POST', null, null);
+  if (r && r.res.ok) {
+    const data = r.data.data;
+    showStatus('已拉取 ' + data.count + ' 个模型', 'ok');
+    loadProviderModels(providerId);
+  } else {
+    const msg = (r && r.data && r.data.error && r.data.error.message) || '拉取失败';
+    showStatus('拉取失败: ' + msg, 'err');
+  }
+}
+
+async function testProvider(providerId, btn) {
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = '⏳ 测速中...';
+  const t0 = Date.now();
+  const r = await callApi('/api/providers/' + providerId + '/test', 'POST', { prompt: 'ping' }, null);
+  btn.disabled = false; btn.textContent = orig;
+  const out = document.getElementById('test-result-' + providerId);
+  if (!out) return;
+  if (r && r.res.ok) {
+    const d = r.data.data;
+    out.className = 'test-result visible ok';
+    out.textContent = `✓ ${d.latencyMs}ms · model=${d.model} · "${d.content || ''}"`;
+  } else {
+    const err = (r && r.data && r.data.error) || { message: '测速失败' };
+    out.className = 'test-result visible err';
+    out.textContent = `✗ ${err.message}` + (err.latencyMs ? ` (${err.latencyMs}ms)` : ' (' + (Date.now() - t0) + 'ms)');
+  }
+}
+
+function renderSetupWizard() {
+  return `
+    <div class="setup-wizard">
+      <h3>🚀 3 步开启你的第一个 Provider</h3>
+      <p>添加一个能用的 provider，下面就可以聊天了。</p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h4>从预设选一个</h4>
+          <div class="desc">推荐先试免 key 的：Kilo、OVH、Pollinations、Llama7、AI Horde。</div>
+          <button class="primary" onclick="document.querySelector('[data-target=add-provider-body]').click()">→ 选预设</button>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h4>填 API key</h4>
+          <div class="desc">点预设的“使用”后，填 key（需付费的 provider 会显示“去官方申请”链接）。</div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h4>测速 + 聊天</h4>
+          <div class="desc">返回“现有 Providers”，点 ⚡ 测速，然后去“聊天” tab 试试。</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleSection(h) {
+  const target = document.getElementById(h.getAttribute('data-target'));
+  if (!target) return;
+  h.classList.toggle('collapsed');
+  target.classList.toggle('collapsed');
 }
 
 async function loadHubKeys() {
@@ -168,6 +314,7 @@ async function addProvider() {
 
 function clearAddForm() {
   ['add-label','add-baseUrl','add-apiKey','add-notes'].forEach(id => document.getElementById(id).value = '');
+  const h = document.getElementById('signup-hint'); if (h) h.classList.remove('visible');
 }
 
 let presetFilter = 'all';
@@ -247,8 +394,39 @@ function usePreset(platform, baseUrl, name) {
   document.getElementById('add-apiKey').value = '';
   document.getElementById('add-apiKey').placeholder = name + ' 的 API key (或留空用免 KEY)...';
   document.getElementById('add-notes').value = 'preset: ' + name;
+  // Show signup hint with the "Get API key" link + apply note
+  showSignupHint(platform, name);
   document.getElementById('add-apiKey').focus();
   document.getElementById('add-label').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showSignupHint(platform, name) {
+  const hint = document.getElementById('signup-hint');
+  const text = document.getElementById('signup-hint-text');
+  const link = document.getElementById('signup-hint-link');
+  const note = document.getElementById('signup-hint-note');
+  const preset = allPresets.find(p => p.platform === platform);
+  if (!preset) { hint.classList.remove('visible'); return; }
+  if (preset.keyless) {
+    text.textContent = '免 KEY: 这个 provider 不用填 API key，留空即可。';
+    link.style.display = 'none';
+  } else if (preset.signupUrl) {
+    text.textContent = '还没 key？去官方申请。';
+    link.textContent = '👉 ' + name + ' 申请页';
+    link.href = preset.signupUrl;
+    link.style.display = '';
+  } else {
+    text.textContent = '需要 API key';
+    link.style.display = 'none';
+  }
+  if (preset.applyNote) {
+    note.textContent = ' · ' + preset.applyNote;
+    note.style.display = '';
+  } else {
+    note.textContent = '';
+    note.style.display = 'none';
+  }
+  hint.classList.add('visible');
 }
 
 async function deleteProvider(id) { if (!confirm('确定删除？')) return; await fetch('/api/providers/' + id, { method: 'DELETE' }); loadProviders(); }
@@ -413,3 +591,20 @@ loadProviders();
 loadPresets();
 loadHubKeys();
 setInterval(refreshStatus, 30000);
+
+// === UI helpers (added for setup wizard + status toast) ===
+function showStatus(msg, kind) {
+  // Try the status badge in header first
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  if (dot && txt) {
+    if (kind === 'err') { dot.className = 'status-dot err'; }
+    else { dot.className = 'status-dot ok'; }
+    txt.textContent = msg;
+    if (kind !== 'err') {
+      setTimeout(() => { refreshStatus(); }, 3000);
+    }
+  }
+  // Always also console.log for debugging
+  console.log('[status]', kind || 'ok', msg);
+}
