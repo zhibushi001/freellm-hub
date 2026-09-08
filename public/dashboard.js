@@ -581,6 +581,7 @@ document.querySelectorAll('.tab').forEach(t => {
     document.getElementById('tab-' + t.dataset.tab).classList.add('active');
     if (t.dataset.tab === 'providers') { loadProviders(); loadPresets(); }
     if (t.dataset.tab === 'keys') loadHubKeys();
+    if (t.dataset.tab === 'models') loadModels();
   });
 });
 
@@ -590,6 +591,7 @@ refreshStatus();
 loadProviders();
 loadPresets();
 loadHubKeys();
+loadModels();
 setInterval(refreshStatus, 30000);
 
 // === UI helpers (added for setup wizard + status toast) ===
@@ -608,3 +610,105 @@ function showStatus(msg, kind) {
   // Always also console.log for debugging
   console.log('[status]', kind || 'ok', msg);
 }
+
+// === Models tab ===
+let allModels = [];
+let modelsTierFilter = 'all';
+
+async function loadModels() {
+  const result = await callApi('/api/models/all', 'GET', null, null);
+  const tableEl = document.getElementById('models-table');
+  const countEl = document.getElementById('models-count');
+  if (!result || !result.res.ok) { tableEl.innerHTML = '<div class="models-empty">加载失败</div>'; return; }
+  allModels = (result.data && result.data.data) || [];
+  const total = (result.data && result.data.total) || 0;
+  if (countEl) countEl.textContent = total + ' 个模型';
+  renderModels();
+}
+
+function renderModels() {
+  const tableEl = document.getElementById('models-table');
+  if (!tableEl) return;
+  const q = (document.getElementById('models-search')?.value || '').trim().toLowerCase();
+  let rows = allModels.slice();
+  if (modelsTierFilter !== 'all') {
+    rows = rows.filter(m => m.tier === modelsTierFilter);
+  }
+  if (q) {
+    rows = rows.filter(m =>
+      (m.modelId || '').toLowerCase().includes(q) ||
+      (m.label || '').toLowerCase().includes(q) ||
+      (m.qualified || '').toLowerCase().includes(q)
+    );
+  }
+  if (rows.length === 0) {
+    tableEl.innerHTML = '<div class="models-empty">没有匹配的模型<br><br>' +
+      '<a class="primary" style="cursor:pointer" onclick="document.querySelector(\'[data-tab=providers]\').click()">→ 去添加 Provider 拉模型</a></div>';
+    return;
+  }
+  const tierLabel = { free: '🟢 免费', freemium: '🟡 免费额度', paid: '🔴 付费' };
+  const tierClass = { free: 'tag-free', freemium: 'tag-freemium', paid: 'tag-paid' };
+  tableEl.innerHTML = `
+    <table class="models-table">
+      <thead>
+        <tr>
+          <th>模型</th>
+          <th>Provider</th>
+          <th>类型</th>
+          <th style="width: 1%; white-space: nowrap;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(m => `
+          <tr>
+            <td class="model-id">
+              <div>${esc(m.modelId)}</div>
+              <div class="qualified">${esc(m.qualified)}</div>
+            </td>
+            <td class="provider">${esc(m.label)}</td>
+            <td><span class="tag ${tierClass[m.tier] || 'tag-free'}">${tierLabel[m.tier] || m.tier}</span></td>
+            <td class="actions">
+              <button class="primary" onclick="useModelInChat('${esc(m.qualified)}')">💬 聊天</button>
+              <button onclick="copyToClipboard('${esc(m.qualified)}', this)">复制</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top: 8px; color: var(--text-dim); font-size: 11px;">显示 ${rows.length} / ${allModels.length} 个</div>
+  `;
+}
+
+function useModelInChat(qualified) {
+  document.getElementById('chat-model').value = qualified;
+  document.querySelector('[data-tab="chat"]').click();
+  setTimeout(() => document.getElementById('chat-message').focus(), 100);
+}
+
+async function refreshAllModels(btn) {
+  if (!btn) return;
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = '⏳ 拉取所有 provider...';
+  const r = await callApi('/api/models/refresh-all', 'POST', null, null);
+  btn.disabled = false; btn.textContent = orig;
+  if (r && r.res.ok) {
+    const d = r.data.data;
+    const summary = d.results.map(x => x.error ? `❌${x.label}: ${x.error.slice(0, 60)}` : `✓${x.label}: ${x.count}`).join('\n');
+    alert(`完成: ${d.ok} OK, ${d.failed} 失败\n\n${summary}`);
+    loadModels();
+  } else {
+    alert('刷新失败: ' + ((r && r.data && r.data.error) || '').message);
+  }
+}
+
+// Wire tier filter buttons
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#models-tier-filters button').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#models-tier-filters button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      modelsTierFilter = b.getAttribute('data-tier');
+      renderModels();
+    });
+  });
+});
