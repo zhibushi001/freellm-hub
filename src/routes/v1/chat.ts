@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getDb } from '../../db/index.js';
 import { getProviderKey } from '../api/providers.js';
-import { OpenAICompatibleProvider } from '../../providers/openai-compatible.js';
+import { createProvider } from '../../providers/factory.js';
 import type { ChatRequest, ModelInfo, Provider } from '../../providers/base.js';
 
 export const chatRouter = Router();
@@ -163,7 +163,7 @@ function pickProviders(modelStr: string): { provider: Provider; modelId: string 
     const apiKey = getProviderKey(row.id);
     if (!apiKey) return null;
     return {
-      provider: new OpenAICompatibleProvider({
+      provider: createProvider({
         id: row.id,
         label: row.label,
         baseUrl: row.base_url,
