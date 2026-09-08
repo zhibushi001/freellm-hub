@@ -6,6 +6,8 @@ import { modelsRouter } from './routes/v1/models.js';
 import { pingRouter } from './routes/v1/ping.js';
 import { chatRouter } from './routes/v1/chat.js';
 import { providersRouter } from './routes/api/providers.js';
+import { hubKeysRouter } from './routes/api/hub-keys.js';
+import { requireHubKey } from './middleware/auth.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -34,19 +36,20 @@ export const createApp = (): Express => {
       status: 'ok',
       service: 'freellm-hub',
       version: '0.1.0',
-      mode: 'm1-chat',
+      mode: 'm2-streaming-auth',
       db: 'sqlite',
       timestamp: new Date().toISOString(),
     });
   });
 
-  // OpenAI-compatible routes
-  app.use('/v1', pingRouter);
-  app.use('/v1', modelsRouter);
-  app.use('/v1', chatRouter);
+  // OpenAI-compatible routes (require hub key auth)
+  app.use('/v1', requireHubKey, pingRouter);
+  app.use('/v1', requireHubKey, modelsRouter);
+  app.use('/v1', requireHubKey, chatRouter);
 
-  // Management API
+  // Management API (no auth on /api/* in M2 — single-tenant local use)
   app.use('/api', providersRouter);
+  app.use('/api', hubKeysRouter);
 
   // 404
   app.use((_req, res) => {
