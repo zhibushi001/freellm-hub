@@ -146,6 +146,81 @@
       background: var(--success); color: #0d1117; font-weight: 600;
     }
     .badge.off { background: var(--text-dim); }
+    /* === 新样式：signup hint + provider card + models === */
+    .signup-hint {
+      background: rgba(88, 166, 255, 0.08); border: 1px solid rgba(88, 166, 255, 0.3);
+      border-radius: 6px; padding: 8px 10px; margin-top: 6px; font-size: 12px;
+      color: var(--text-dim); display: none; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .signup-hint.visible { display: flex; }
+    .signup-hint a { color: var(--accent); text-decoration: none; }
+    .signup-hint a:hover { text-decoration: underline; }
+    .signup-hint .note { color: var(--warning); }
+    .provider-card {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px; transition: border-color 0.2s;
+    }
+    .provider-card:hover { border-color: var(--accent); }
+    .provider-card .head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .provider-card .head .info { flex: 1; min-width: 0; }
+    .provider-card .head .name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .provider-card .head .url { font-size: 12px; color: var(--text-dim); font-family: ui-monospace, monospace; word-break: break-all; }
+    .provider-card .head .actions { display: flex; gap: 4px; flex-wrap: wrap; }
+    .provider-card .head .actions button { font-size: 11px; padding: 3px 8px; }
+    .provider-card .test-result {
+      background: var(--bg-card); border-radius: 6px; padding: 6px 10px;
+      font-size: 11px; font-family: ui-monospace, monospace; margin-top: 8px;
+      display: none; word-break: break-all;
+    }
+    .provider-card .test-result.visible { display: block; }
+    .provider-card .test-result.ok { border-left: 3px solid var(--success); color: var(--success); }
+    .provider-card .test-result.err { border-left: 3px solid var(--error); color: var(--error); }
+    .model-list { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+    .model-list .head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .model-list .head .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .model-list .head .actions { margin-left: auto; display: flex; gap: 4px; }
+    .model-list .head .actions button { font-size: 10px; padding: 2px 6px; }
+    .model-row {
+      display: flex; align-items: center; gap: 6px; padding: 3px 0;
+      font-family: ui-monospace, monospace; font-size: 12px;
+    }
+    .model-row input[type=checkbox] { width: 14px; height: 14px; }
+    .model-row .id { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .model-row button { font-size: 10px; padding: 1px 6px; }
+    .model-list .batch-bar {
+      background: rgba(88, 166, 255, 0.12); border: 1px solid var(--accent);
+      border-radius: 6px; padding: 6px 10px; margin-top: 6px;
+      display: none; align-items: center; gap: 8px; font-size: 12px;
+    }
+    .model-list .batch-bar.visible { display: flex; }
+    .model-list .batch-bar button { font-size: 11px; padding: 3px 8px; }
+    .setup-wizard {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(163, 113, 247, 0.05));
+      border: 1px solid rgba(88, 166, 255, 0.3); border-radius: 12px; padding: 20px;
+      margin-bottom: 20px;
+    }
+    .setup-wizard h3 { font-size: 16px; margin-bottom: 4px; }
+    .setup-wizard p { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
+    .setup-wizard .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .setup-wizard .step {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+    }
+    .setup-wizard .step .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent); color: #0d1117; font-weight: 700; font-size: 12px; margin-bottom: 8px;
+    }
+    .setup-wizard .step h4 { font-size: 13px; margin-bottom: 4px; }
+    .setup-wizard .step .desc { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+    .setup-wizard .step button { font-size: 12px; padding: 5px 10px; }
+    .section-toggle {
+      cursor: pointer; user-select: none;
+    }
+    .section-toggle .chev { transition: transform 0.2s; display: inline-block; }
+    .section-toggle.collapsed .chev { transform: rotate(-90deg); }
+    .section-body { overflow: hidden; transition: max-height 0.3s; }
+    .section-body.collapsed { max-height: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; }
     footer {
       margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border);
       color: var(--text-dim); font-size: 13px; text-align: center;
@@ -303,40 +378,47 @@
     </div>
 
     <div class="tab-panel" id="tab-providers">
-      <section>
-        <h2>从预设选择 <span class="pill" id="preset-count">载入中...</span></h2>
-        <p class="desc" style="margin-bottom: 12px;">点“使用”自动填表，再填 API key 即可。free 都能免填 key 试用，paid 需付费账号。</p>
-        <div class="preset-filters" id="preset-filters">
-          <button class="active" data-tier="all">全部</button>
-          <button data-tier="free">免费</button>
-          <button data-tier="freemium">有免费额度</button>
-          <button data-tier="paid">付费</button>
-          <button data-tier="cn">只看国内</button>
-        </div>
-        <div class="preset-grid" id="preset-grid"><div class="desc">加载中...</div></div>
-      </section>
-      <section>
-        <h2>添加 Provider</h2>
-        <div class="endpoint">
-          <p class="desc" style="margin-bottom: 16px;">API key AES-256-GCM 加密存 SQLite。任何 OpenAI 兼容端点都支持。</p>
-          <div class="form-row"><label>Label (model 前缀)</label><input id="add-label" placeholder="zhipu" /></div>
-          <div class="form-row"><label>Base URL</label><input id="add-baseUrl" placeholder="https://open.bigmodel.cn/api/paas/v4" /></div>
-          <div class="grid-2">
-            <div class="form-row"><label>Chat path</label><input id="add-apiPath" value="/chat/completions" /></div>
-            <div class="form-row"><label>Models path</label><input id="add-modelsPath" value="/models" /></div>
-          </div>
-          <div class="form-row"><label>API Key</label><input id="add-apiKey" type="password" placeholder="sk-..." /></div>
-          <div class="form-row"><label>备注</label><input id="add-notes" placeholder="可选" /></div>
-          <div class="actions">
-            <button class="primary" onclick="addProvider()">添加</button>
-            <button onclick="clearAddForm()">清空</button>
-          </div>
-          <div class="output" id="out-add-provider"></div>
-        </div>
-      </section>
+      <div id="setup-wizard"></div>
       <section>
         <h2>现有 Providers <button class="primary" style="margin-left: auto; font-size: 12px;" onclick="loadProviders()">刷新</button></h2>
         <div class="provider-list" id="provider-list"><div class="desc">加载中...</div></div>
+      </section>
+      <section>
+        <h2 class="section-toggle collapsed" data-target="add-provider-body" onclick="toggleSection(this)"><span class="chev">▾</span> 添加新 Provider</h2>
+        <div class="section-body collapsed" id="add-provider-body">
+          <h2 style="font-size: 13px; font-weight: 500; color: var(--text-dim); margin-top: 12px;">从预设选择 <span class="pill" id="preset-count">载入中...</span></h2>
+          <p class="desc" style="margin: 4px 0 10px;">点“使用”自动填表，填 API key 即可。</p>
+          <div class="preset-filters" id="preset-filters">
+            <button class="active" data-tier="all">全部</button>
+            <button data-tier="free">免费</button>
+            <button data-tier="freemium">有免费额度</button>
+            <button data-tier="paid">付费</button>
+            <button data-tier="cn">只看国内</button>
+          </div>
+          <div class="preset-grid" id="preset-grid"><div class="desc">加载中...</div></div>
+          <div class="endpoint" style="margin-top: 12px;">
+            <p class="desc" style="margin-bottom: 16px;">API key AES-256-GCM 加密存 SQLite。任何 OpenAI 兼容端点都支持。</p>
+            <div class="form-row"><label>Label (model 前缀)</label><input id="add-label" placeholder="zhipu" /></div>
+            <div class="form-row"><label>Base URL</label><input id="add-baseUrl" placeholder="https://open.bigmodel.cn/api/paas/v4" /></div>
+            <div class="grid-2">
+              <div class="form-row"><label>Chat path</label><input id="add-apiPath" value="/chat/completions" /></div>
+              <div class="form-row"><label>Models path</label><input id="add-modelsPath" value="/models" /></div>
+            </div>
+            <div class="form-row"><label>API Key</label><input id="add-apiKey" type="password" placeholder="sk-..." /></div>
+            <div class="signup-hint" id="signup-hint">
+              <span>💡</span>
+              <span id="signup-hint-text">需要 API key？</span>
+              <a id="signup-hint-link" href="#" target="_blank" rel="noopener noreferrer">👉 去官方申请</a>
+              <span class="note" id="signup-hint-note"></span>
+            </div>
+            <div class="form-row"><label>备注</label><input id="add-notes" placeholder="可选" /></div>
+            <div class="actions">
+              <button class="primary" onclick="addProvider()">添加</button>
+              <button onclick="clearAddForm()">清空</button>
+            </div>
+            <div class="output" id="out-add-provider"></div>
+          </div>
+        </div>
       </section>
     </div>
 
