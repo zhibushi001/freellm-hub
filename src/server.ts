@@ -11,6 +11,9 @@ export const createApp = (): Express => {
   app.use(cors());
   app.use(express.json({ limit: '4mb' }));
 
+  // Static dashboard (public/index.html at /)
+  app.use(express.static('public'));
+
   // Request logging (minimal)
   app.use((req, _res, next) => {
     if (env.logLevel === 'debug') {
