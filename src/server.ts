@@ -9,6 +9,7 @@ import { providersRouter } from './routes/api/providers.js';
 import { hubKeysRouter } from './routes/api/hub-keys.js';
 import { presetsRouter } from './routes/api/presets.js';
 import { modelsRouter as apiModelsRouter } from './routes/api/models.js';
+import { configRouter } from './routes/api/config.js';
 import { requireHubKey } from './middleware/auth.js';
 
 export const createApp = (): Express => {
@@ -53,6 +54,7 @@ export const createApp = (): Express => {
   app.use('/api', providersRouter);
   app.use('/api', hubKeysRouter);
   app.use('/api', apiModelsRouter);
+  app.use('/api', configRouter);
   app.use('/api/presets', presetsRouter);
 
   // 404
