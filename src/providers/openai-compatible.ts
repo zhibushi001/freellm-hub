@@ -14,7 +14,7 @@ import type {
 export class OpenAICompatibleProvider implements Provider {
   readonly id: string;
   readonly label: string;
-  private readonly baseUrl: string; // e.g. https://api.openai.com/v1
+  private readonly baseUrl: string;
   private readonly apiPath: string;
   private readonly modelsPath: string;
   private readonly apiKey: string;
@@ -22,7 +22,6 @@ export class OpenAICompatibleProvider implements Provider {
   constructor(cfg: ProviderConfig) {
     this.id = cfg.id;
     this.label = cfg.label;
-    // Normalize: strip trailing slash
     this.baseUrl = cfg.baseUrl.replace(/\/+$/, '');
     this.apiPath = cfg.apiPath.startsWith('/') ? cfg.apiPath : '/' + cfg.apiPath;
     this.modelsPath = cfg.modelsPath.startsWith('/') ? cfg.modelsPath : '/' + cfg.modelsPath;
@@ -70,5 +69,39 @@ export class OpenAICompatibleProvider implements Provider {
       throw new Error(`${this.label} chat failed: HTTP ${res.status} — ${body.slice(0, 500)}`);
     }
     return (await res.json()) as ChatResponse;
+  }
+
+  async chatStream(
+    req: ChatRequest,
+    onChunk: (raw: string) => void,
+    signal?: AbortSignal,
+  ): Promise<void> {
+    const res = await fetch(this.chatUrl, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ ...req, stream: true }),
+      signal,
+    });
+    if (!res.ok || !res.body) {
+      const body = await res.text();
+      throw new Error(`${this.label} stream failed: HTTP ${res.status} — ${body.slice(0, 500)}`);
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      // SSE messages are separated by \n\n; process complete events, keep remainder in buffer
+      let sepIdx: number;
+      while ((sepIdx = buffer.indexOf('\n\n')) !== -1) {
+        const event = buffer.slice(0, sepIdx);
+        buffer = buffer.slice(sepIdx + 2);
+        if (event.trim()) onChunk(event + '\n\n');
+      }
+    }
+    // Flush any trailing data
+    if (buffer.trim()) onChunk(buffer);
   }
 }
