@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getDb } from '../../db/index.js';
 import { getProviderKey } from '../api/providers.js';
-import { OpenAICompatibleProvider } from '../../providers/openai-compatible.js';
+import { createProvider } from '../../providers/factory.js';
 import { loadModelsForProvider } from './chat.js';
 import type { ModelInfo } from '../../providers/base.js';
 
@@ -21,7 +21,7 @@ modelsRouter.get('/models', async (_req, res) => {
   for (const row of rows) {
     const apiKey = getProviderKey(row.id);
     if (!apiKey) continue;
-    const provider = new OpenAICompatibleProvider({
+    const provider = createProvider({
       id: row.id,
       label: row.label,
       baseUrl: row.base_url,
