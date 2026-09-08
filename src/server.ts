@@ -8,6 +8,7 @@ import { chatRouter } from './routes/v1/chat.js';
 import { providersRouter } from './routes/api/providers.js';
 import { hubKeysRouter } from './routes/api/hub-keys.js';
 import { presetsRouter } from './routes/api/presets.js';
+import { modelsRouter as apiModelsRouter } from './routes/api/models.js';
 import { requireHubKey } from './middleware/auth.js';
 
 export const createApp = (): Express => {
@@ -51,6 +52,7 @@ export const createApp = (): Express => {
   // Management API (no auth on /api/* in M2 — single-tenant local use)
   app.use('/api', providersRouter);
   app.use('/api', hubKeysRouter);
+  app.use('/api', apiModelsRouter);
   app.use('/api/presets', presetsRouter);
 
   // 404
