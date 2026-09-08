@@ -277,18 +277,21 @@ async function loadHubKeys() {
   const keys = (data && data.data) || [];
   document.getElementById('stat-keys').textContent = keys.length;
   if (keys.length === 0) { list.innerHTML = '<div class="desc">还没 hub key</div>'; return; }
-  list.innerHTML = keys.map(k => `
+  list.innerHTML = keys.map(k => {
+    const hasStored = (() => { try { return !!localStorage.getItem('hubKey_' + k.id); } catch (e) { return false; } })();
+    return `
     <div class="key-item">
       <div class="info">
         <div class="name">${esc(k.label)} <span class="badge ${k.enabled ? '' : 'off'}">${k.enabled ? 'enabled' : 'disabled'}</span></div>
-        <div class="meta">${esc(k.keyPrefix)}… · 创建 ${new Date(k.createdAt).toLocaleString('zh-CN')} · ${k.lastUsedAt ? '最后用 ' + new Date(k.lastUsedAt).toLocaleString('zh-CN') : '未用过'}</div>
+        <div class="meta">${esc(k.keyPrefix)}… · 创建 ${new Date(k.createdAt).toLocaleString('zh-CN')} · ${k.lastUsedAt ? '最后用 ' + new Date(k.lastUsedAt).toLocaleString('zh-CN') : '未用过'} · ${hasStored ? '<span style="color:var(--success)">📦 本机有备份</span>' : '<span style="color:var(--text-dim)">📭 本机无备份</span>'}</div>
       </div>
       <div class="actions">
-        <button onclick="useKey('${k.id}','${esc(k.keyPrefix)}')">用这个</button>
+        <button class="primary" onclick="copyStoredKey('${k.id}','${esc(k.keyPrefix)}',this)" title="${hasStored ? '从本机存的那份复制' : '本机无备份，点这里重新生成'}">${hasStored ? '📋 复制' : '🔄 重新生成'}</button>
         <button onclick="toggleHubKey('${k.id}', ${!k.enabled})">${k.enabled ? '禁用' : '启用'}</button>
         <button class="danger" onclick="deleteHubKey('${k.id}')">删除</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -437,10 +440,12 @@ async function createHubKey() {
   const res = await fetch('/api/hub-keys', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({label}) });
   const data = await res.json();
   if (!res.ok) { alert('Failed: ' + (data && data.error && data.error.message || 'unknown')); return; }
+  // Auto-save to localStorage so user can copy it back later
+  try { localStorage.setItem('hubKey_' + data.id, data.fullKey); } catch (e) {}
   const display = document.getElementById('new-key-display');
   display.innerHTML = `
     <div class="new-key-banner">
-      <div style="margin-bottom: 6px; color: var(--warning); font-weight: 600;">⚠️ 保存这个 key — 不会再显示！</div>
+      <div style="margin-bottom: 6px; color: var(--success); font-weight: 600;">✓ 已保存到本机 (localStorage) — 刷新后仍可复制</div>
       <div>Label: <strong>${esc(data.label)}</strong></div>
       <div style="margin-top: 4px;">Full key:</div>
       <code id="new-key-value">${esc(data.fullKey)}</code>
@@ -464,6 +469,41 @@ function useKey(id, prefix) {
   // We don't have the full key anymore (only prefix shown in list), so prompt user to paste
   const k = prompt(`粘贴完整 key (${prefix}...):`);
   if (k) setKey(k);
+}
+
+function copyStoredKey(id, prefix, btn) {
+  const stored = (() => { try { return localStorage.getItem('hubKey_' + id); } catch (e) { return null; } })();
+  if (stored) {
+    copyToClipboard(stored, btn);
+  } else {
+    if (confirm('本机未存此 key 的完整值。\n要重新生成吗？\n（原 key 将失效）')) {
+      regenerateHubKey(id, prefix);
+    }
+  }
+}
+
+async function regenerateHubKey(id, prefix) {
+  const old = await fetch('/api/hub-keys').then(r => r.json()).then(d => (d.data || []).find(k => k.id === id));
+  if (!old) { alert('未找到该 key'); return; }
+  await fetch('/api/hub-keys/' + id, { method: 'DELETE' });
+  const res = await fetch('/api/hub-keys', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({label: old.label}) });
+  const data = await res.json();
+  if (!res.ok) { alert('重新生成失败: ' + (data && data.error && data.error.message || 'unknown')); loadHubKeys(); return; }
+  try { localStorage.setItem('hubKey_' + data.id, data.fullKey); } catch (e) {}
+  try { localStorage.removeItem('hubKey_' + id); } catch (e) {}
+  const display = document.getElementById('new-key-display');
+  display.innerHTML = `
+    <div class="new-key-banner">
+      <div style="margin-bottom: 6px; color: var(--success); font-weight: 600;">✓ 已重新生成 (旧 key ${prefix}... 已删除)</div>
+      <div>Label: <strong>${esc(data.label)}</strong></div>
+      <div style="margin-top: 4px;">Full key:</div>
+      <code>${esc(data.fullKey)}</code>
+      <div class="actions" style="margin-top: 8px;">
+        <button class="primary" onclick="copyToClipboard('${esc(data.fullKey)}', this)">📋 复制</button>
+        <button onclick="setKey('${esc(data.fullKey)}')">🔑 用这个</button>
+      </div>
+    </div>`;
+  loadHubKeys();
 }
 
 async function deleteHubKey(id) { if (!confirm('确定删除这个 hub key？')) return; await fetch('/api/hub-keys/' + id, { method: 'DELETE' }); loadHubKeys(); }
