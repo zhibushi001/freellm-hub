@@ -66,6 +66,12 @@ export interface Provider {
   readonly label: string;
   /** List models this provider offers (calls /models endpoint) */
   listModels(): Promise<ModelInfo[]>;
-  /** Send a chat request (non-streaming) and return the response */
+  /** Send a chat request (non-streaming) and return the full response */
   chat(req: ChatRequest): Promise<ChatResponse>;
+  /**
+   * Send a streaming chat request. The provider parses SSE chunks and invokes `onChunk`
+   * with the raw `data: {...}\n\n` (or `data: [DONE]\n\n`) text. Caller forwards to client.
+   * Resolves when the stream is complete.
+   */
+  chatStream(req: ChatRequest, onChunk: (raw: string) => void, signal?: AbortSignal): Promise<void>;
 }
