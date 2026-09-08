@@ -299,6 +299,11 @@
       <span class="key-text" id="current-key-display">未设置</span>
       <button onclick="editKey()">更改</button>
     </div>
+    <div class="key-bar" style="background: var(--bg-elev);">
+      <span>🌐 Hub URL:</span>
+      <span class="key-text" id="hub-base-url">—</span>
+      <button onclick="copyToClipboard(document.getElementById('hub-base-url').textContent + '/v1', this)">复制 /v1</button>
+    </div>
 
     <div class="stats">
       <div class="stat">
@@ -446,10 +451,27 @@
       <section>
         <h2>创建 Hub Key</h2>
         <div class="endpoint">
-          <p class="desc" style="margin-bottom: 16px;">格式: <code>fh_</code> + 64 hex 字符。生成后<strong>只显示一次</strong>，请立即保存。</p>
+          <p class="desc" style="margin-bottom: 16px;">格式: <code>fh_</code> + 64 hex 字符。创建后自动存本机 localStorage，刷新仍可复制。</p>
           <div class="form-row"><label>Label</label><input id="key-label" value="default" /></div>
           <div class="actions"><button class="primary" onclick="createHubKey()">创建</button></div>
           <div id="new-key-display"></div>
+        </div>
+      </section>
+      <section>
+        <h2>导入 / 导出 <span class="pill" style="font-weight:400; font-size:11px;">从 freellmapi 粘贴也能用</span></h2>
+        <div class="endpoint">
+          <p class="desc" style="margin-bottom: 12px;">导入接受三种格式：<br>
+            1. 本 hub 的导出 JSON（<code>{providers, hubKeys}</code>）<br>
+            2. freellmapi 数组（<code>[{platform, apiKey, baseUrl}, ...]</code>）<br>
+            3. freellmapi 对象包装（<code>{keys: [...]}</code>）</p>
+          <div class="form-row"><label>粘贴 JSON</label><textarea id="import-json" rows="6" placeholder='[{"platform":"zhipu","apiKey":"sk-xxx","baseUrl":"https://open.bigmodel.cn/api/paas/v4"}]'></textarea></div>
+          <div class="actions">
+            <button class="primary" onclick="importConfig()">📥 导入</button>
+            <button onclick="exportConfig()">📤 导出 (无 secrets)</button>
+            <button onclick="exportConfig(true)">🔐 导出 (含加密 secrets)</button>
+            <button onclick="loadSample()">填示例</button>
+          </div>
+          <div class="output" id="out-config"></div>
         </div>
       </section>
       <section>
