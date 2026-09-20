@@ -1,53 +1,47 @@
-# Multi-stage build using cgr.dev/chainguard/wolfi-base (has apk, shell)
-# We install nodejs via apk (no docker.io needed)
-
-# ---- Build stage ----
-FROM cgr.dev/chainguard/wolfi-base:latest AS builder
-WORKDIR /app
-
-# Install nodejs + npm via apk
-RUN apk add --no-cache nodejs-20 npm
-
-# Install all deps (including dev)
-COPY package*.json ./
-RUN npm install
-
-# Build TS -> dist
-COPY tsconfig.json ./
-COPY src ./src
+# Build stage 1: 编译 React 前端
+FROM cgr.dev/chainguard/node:latest-dev AS client-builder
+WORKDIR /app/client
+USER root
+RUN apk add --no-cache curl 2>/dev/null || true
+USER node
+COPY --chown=node:node freellm-hub-client/package*.json ./
+COPY --chown=node:node freellm-hub-client/node_modules ./node_modules
+COPY --chown=node:node freellm-hub-client/ ./
 RUN npm run build
 
-# Prune dev deps for production
-RUN npm prune --omit=dev
-
-# ---- Runtime stage ----
-FROM cgr.dev/chainguard/wolfi-base:latest
+# Build stage 2: 编译 TypeScript 后端
+FROM cgr.dev/chainguard/node:latest-dev AS builder
 WORKDIR /app
-
-# Install only nodejs runtime (smaller)
-RUN apk add --no-cache nodejs-20
-
-# Create non-root user 'hub' (chainguard ships with 'nonroot' at uid 65532)
-# Use existing 'nonroot' user for safety
-
-# Copy built app + node_modules
-COPY --from=builder --chown=nonroot:nonroot /app/dist ./dist
-COPY --from=builder --chown=nonroot:nonroot /app/node_modules ./node_modules
-COPY --from=builder --chown=nonroot:nonroot /app/package.json ./package.json
-
-# Persistent data dir (create as root, then chown for nonroot)
 USER root
-RUN mkdir -p /app/data && chown -R nonroot:nonroot /app/data
-VOLUME ["/app/data"]
-USER nonroot
+RUN apk add --no-cache curl 2>/dev/null || true
+USER node
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node node_modules ./node_modules
+COPY --chown=node:node tsconfig.json ./
+COPY --chown=node:node scripts ./scripts
+COPY --chown=node:node src ./src
+RUN npm run build
 
-ENV NODE_ENV=production
-ENV PORT=3030
-ENV HOST=0.0.0.0
-ENV DATABASE_PATH=/app/data/freellm-hub.db
-
+# Production stage
+FROM cgr.dev/chainguard/node:latest AS production
+WORKDIR /app
+USER root
+RUN apk add --no-cache curl 2>/dev/null || true
+USER node
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node node_modules ./node_modules
+# 后端编译产物
+COPY --from=builder --chown=node:node /app/dist ./dist
+COPY --chown=node:node package.json ./
+COPY --from=builder --chown=node:node /app/src/db/migrations ./dist/db/migrations
+# Keep old SSR CSS/JS for setup page
+# COPY --from=builder --chown=node:node /app/src/public ./dist/public
+# React 前端构建产物
+COPY --from=client-builder --chown=node:node /app/client/dist ./dist/public/admin
+RUN mkdir -p /app/data
 EXPOSE 3030
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/health || exit 1
-
-CMD ["node", "dist/index.js"]
+  CMD node -e "require('http').get('http://localhost:3030/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+USER root
+ENTRYPOINT ["/usr/bin/node"]
+CMD ["dist/server.js"]

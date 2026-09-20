@@ -1,0 +1,7 @@
+# 排除无关目录
+data
+.git
+*.bak
+*.bak*
+*.log
+.DS_Store

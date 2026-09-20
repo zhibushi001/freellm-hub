@@ -1,0 +1,66 @@
+-- Phase 6: 为免费提供商补充 signup_url (申请地址)
+-- 使用 docs_url 作为 fallback (已有数据不覆盖)
+
+UPDATE providers SET signup_url = 'https://ollama.com' WHERE name = 'ollama-cloud' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://console.groq.com' WHERE name = 'groq-free' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://cloud.cerebras.ai' WHERE name = 'cerebras' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://huggingface.co/docs/inference-providers' WHERE name = 'huggingface' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://kilo.ai' WHERE name = 'kilo' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://pollinations.ai' WHERE name = 'pollinations' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://llm7.io' WHERE name = 'llm7' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://opencode.ai/zen' WHERE name = 'opencode-zen' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://endpoints.ai.cloud.ovh.net' WHERE name = 'ovh-ai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://aihorde.net' WHERE name = 'aihorde' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://siliconflow.cn' WHERE name = 'siliconflow' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://build.nvidia.com' WHERE name = 'nvidia-nim' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://developer.amd.com' WHERE name = 'amd-radeon' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://platform.agnes-ai.com' WHERE name = 'agnes-ai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://platform.reka.ai' WHERE name = 'reka' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://modelscope.cn' WHERE name = 'modelscope' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://cloud.baidu.com/product/qianfan' WHERE name = 'baidu-qianfan' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.volcengine.com/product/ark' WHERE name = 'volcengine-ark' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://xinghuo.xfyun.cn' WHERE name = 'iflytek-spark' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://longcat.chat' WHERE name = 'longcat' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://bigmodel.cn' WHERE name = 'zhipu-free' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://sail.com' WHERE name = 'sail' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://electronhub.ai' WHERE name = 'electronhub' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://experiential.ai' WHERE name = 'experiential' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://router9.ai' WHERE name = 'router9' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://septor.ai' WHERE name = 'septor' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://b.ai' WHERE name = 'bai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://anyapi.ai' WHERE name = 'anyapi' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://routeway.ai' WHERE name = 'routeway' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://bazaarlink.ai' WHERE name = 'bazaarlink' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://ainative.studio' WHERE name = 'ainative' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://aionlabs.ai' WHERE name = 'aion-labs' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://navy.ai' WHERE name = 'navyai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://bynara.id' WHERE name = 'nara-router' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://sea-lion.ai' WHERE name = 'sea-lion' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://orcarouter.ai' WHERE name = 'orca-router' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://unorouter.com' WHERE name = 'uno-router' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://xkiro.com' WHERE name = 'xkiro' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://developers.cloudflare.com/workers-ai' WHERE name = 'cloudflare-ai' AND signup_url IS NULL;
+
+-- 付费提供商也补 signup_url
+UPDATE providers SET signup_url = 'https://platform.openai.com' WHERE name = 'openai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://console.anthropic.com' WHERE name = 'anthropic' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://aistudio.google.com' WHERE name = 'google' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://platform.deepseek.com' WHERE name = 'deepseek' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://console.groq.com' WHERE name = 'groq' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://platform.mistral.ai' WHERE name = 'mistral' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://openrouter.ai' WHERE name = 'openrouter' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.together.ai' WHERE name = 'together' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://fireworks.ai' WHERE name = 'fireworks' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.moonshot.cn' WHERE name = 'moonshot' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://bigmodel.cn' WHERE name = 'zhipu' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.yiyan.com' WHERE name = 'yi' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://dashscope.console.aliyun.com' WHERE name = 'dashscope' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://dashboard.cohere.com' WHERE name = 'cohere' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://perplexity.ai' WHERE name = 'perplexity' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://x.ai' WHERE name = 'xai' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://portal.azure.com' WHERE name = 'azure' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://aws.amazon.com/bedrock' WHERE name = 'aws' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.volcengine.com/product/ark' WHERE name = 'volcengine' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://cloud.baidu.com/product/qianfan' WHERE name = 'baidu' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://xinghuo.xfyun.cn' WHERE name = 'xunfei' AND signup_url IS NULL;
+UPDATE providers SET signup_url = 'https://www.xinghuo.net' WHERE name = 'minimax' AND signup_url IS NULL;
